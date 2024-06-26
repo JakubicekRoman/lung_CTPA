@@ -15,6 +15,7 @@ from scipy.ndimage import median_filter
 import pandas as pd
 from scipy import ndimage
 from utils import int_analyze, data_subsampling, lung_separate
+import openpyxl
 
 data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\nifti'
 
@@ -24,6 +25,11 @@ if not os.path.exists(data_dir.replace('nifti','result_img')):
 
 # Get a list of all NIfTI files in the directory
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('.nii.gz')]
+
+results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mean3',
+                                'Whole_std1', 'Whole_std2', 'Whole_std3', 
+                                'Whole_rate1', 'Whole_rate2', 'Whole_rate3',])
+
 
 # Iterate over the NIfTI files
 # for nifti_file in nifti_files:
@@ -46,10 +52,6 @@ for pat in range(0,1):
     data = median_filter(dataO, size=5)
 
     left_lung, right_lung, trachea, vessels_mask = lung_separate(data, lung_mask)
-
-    results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mean3',
-                                    'Whole_std1', 'Whole_std2', 'Whole_std3', 
-                                    'Whole_rate1', 'Whole_rate2', 'Whole_rate3',])
 
     res=[]
 
@@ -111,7 +113,8 @@ for pat in range(0,1):
 
     # save the results to xlsx file for each patient as one raw in excel files
     results.loc[pat] = [nifti_file]+res.flatten().tolist()
-    results.to_excel(data_dir.replace('nifti','')+'results.xlsx', index=False)
+    
+results.to_excel(data_dir.replace('nifti','')+'results.xlsx', index=False)
 
 
 # viewer = napari.Viewer()
