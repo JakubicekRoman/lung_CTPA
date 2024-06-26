@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.mixture import BayesianGaussianMixture, GaussianMixture
 from scipy import ndimage
 from scipy.ndimage import binary_erosion, binary_dilation
-
+import os
 
 def display_orthogonal_views(volume, slice_index=None):
     """
@@ -63,7 +63,7 @@ def lung_separate(data, mask):
 
     return left_lung_mask, right_lung_mask, trachea_mask, vessels_mask
 
-def int_analyze(data, mask, vessels):
+def int_analyze(data, mask, vessels, file_path):
 
     mask1 = binary_dilation(mask, iterations=2)
     mask1 = binary_erosion(mask1, iterations=3)
@@ -77,10 +77,15 @@ def int_analyze(data, mask, vessels):
     lung_tissue_vekt = np.round(lung_tissue_vekt).astype(int)
     gm = BayesianGaussianMixture(n_components=3, random_state=42).fit(lung_tissue_vekt)
 
-    display_hist(lung_tissue_vekt, gm)
-    return gm
+    # sort the means and save indexes which them sort others
+    indx = np.argsort(gm.means_.squeeze())
+    val = BayesianGaussianMixture(n_components=3, random_state=42)
+    val.weights_, val.covariances_, val.means_ = gm.weights_.squeeze()[indx], gm.covariances_.squeeze()[indx], gm.means_.squeeze()[indx]
 
-def display_hist(data, gm):
+    display_hist(lung_tissue_vekt, val, file_path)
+    return gm, val
+
+def display_hist(data, gm, file_path):
     # display histogram of data and estimated Gassians distributions together
     plt.ion()
     # plt.figure()
@@ -96,3 +101,6 @@ def display_hist(data, gm):
         plt.plot(x, gm.weights_[i]*np.exp(-0.5*(x-gm.means_[i])**2/gm.covariances_[i])/np.sqrt(2*np.pi*gm.covariances_[i]))
     plt.plot(x, y)
     plt.show()
+    # save the figure with plot as png image file
+    plt.savefig(file_path, format='png')
+    plt.close()
