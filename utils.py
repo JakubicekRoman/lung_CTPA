@@ -1,5 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt     
+from sklearn.preprocessing import StandardScaler
+from sklearn.mixture import BayesianGaussianMixture, GaussianMixture
+from scipy import ndimage
+from scipy.ndimage import binary_erosion, binary_dilation
 
 
 def display_orthogonal_views(volume, slice_index=None):
@@ -33,4 +37,62 @@ def display_orthogonal_views(volume, slice_index=None):
     axes[2].axis('off')
 
     plt.tight_layout()
+    plt.show()
+
+def compute_mean_intensity(data, mask):
+    data[data==0] = np.nan
+    mean_intensity = np.nanmean(data[mask])
+    return mean_intensity
+
+def data_subsampling(data, mask, factor=0.5):
+    data = ndimage.zoom(data, factor, order=0)
+    mask = ndimage.zoom(mask, factor, order=0)
+    return data, mask
+
+def lung_separate(data, mask):
+    left_lung_mask = (mask == 10) | (mask == 11)
+    right_lung_mask = ((mask == 12) | (mask == 13) | (mask == 14))    
+    trachea_mask = (mask == 16)
+    vessels_mask = (data > -600)
+
+    # mask vessels matrix  by right and left mask
+    vessels_mask = vessels_mask & (left_lung_mask | right_lung_mask)
+
+    # Dilate the vessels mask to include surrounding tissue
+    vessels_mask = binary_dilation(vessels_mask, iterations=1)
+
+    return left_lung_mask, right_lung_mask, trachea_mask, vessels_mask
+
+def int_analyze(data, mask, vessels):
+
+    mask1 = binary_dilation(mask, iterations=2)
+    mask1 = binary_erosion(mask1, iterations=3)
+
+    lung_tissue = data.copy()
+    lung_tissue[vessels] = np.nan
+    lung_tissue[~mask1] = np.nan
+
+    lung_tissue_vekt = lung_tissue[~np.isnan(lung_tissue)].reshape(-1,1)
+    lung_tissue_vekt[lung_tissue_vekt>-600] = -600
+    lung_tissue_vekt = np.round(lung_tissue_vekt).astype(int)
+    gm = BayesianGaussianMixture(n_components=3, random_state=42).fit(lung_tissue_vekt)
+
+    display_hist(lung_tissue_vekt, gm)
+    return gm
+
+def display_hist(data, gm):
+    # display histogram of data and estimated Gassians distributions together
+    plt.ion()
+    # plt.figure()
+    plt.hist(data[~np.isnan(data)], bins=425, density=True)
+    plt.xlabel('Intensity')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of lung tissue intensities')
+    x = np.linspace(-600, -1000, 1000)
+    x = np.expand_dims(x, axis=1)
+    y = np.zeros_like(x)
+    for i in range(3):
+        y = y + gm.weights_[i]*np.exp(-0.5*(x-gm.means_[i])**2/gm.covariances_[i])/np.sqrt(2*np.pi*gm.covariances_[i])
+        plt.plot(x, gm.weights_[i]*np.exp(-0.5*(x-gm.means_[i])**2/gm.covariances_[i])/np.sqrt(2*np.pi*gm.covariances_[i]))
+    plt.plot(x, y)
     plt.show()
