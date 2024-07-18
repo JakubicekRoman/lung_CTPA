@@ -14,8 +14,10 @@ from sklearn.cluster import KMeans
 from scipy.ndimage import median_filter
 import pandas as pd
 from scipy import ndimage
-from utils import int_analyze, data_subsampling, lung_separate
+from utils import int_analyze, data_subsampling, lung_separate, predict_mask
 import openpyxl
+from scipy.stats import entropy
+
 
 data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\nifti'
 
@@ -28,12 +30,34 @@ nifti_files = [file for file in os.listdir(data_dir) if file.endswith('.nii.gz')
 
 results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mean3',
                                 'Whole_std1', 'Whole_std2', 'Whole_std3', 
-                                'Whole_rate1', 'Whole_rate2', 'Whole_rate3',])
+                                'Whole_rate1', 'Whole_rate2', 'Whole_rate3',
+                                 'Left_mean1', 'Left_mean2', 'Left_mean3',
+                                 'Left_std1', 'Left_std2', 'Left_std3',
+                                 'Left_rate1', 'Left_rate2', 'Left_rate3',
+                                 'Right_mean1', 'Right_mean2', 'Right_mean3',
+                                 'Right_std1', 'Right_std2', 'Right_std3',
+                                 'Right_rate1', 'Right_rate2', 'Right_rate3',
+                                 'SL_mean1', 'SL_mean2', 'SL_mean3',
+                                 'SL_std1', 'SL_std2', 'SL_std3',
+                                 'SL_rate1', 'SL_rate2', 'SL_rate3',
+                                 'IL_mean1', 'IL_mean2', 'IL_mean3',
+                                 'IL_std1', 'IL_std2', 'IL_std3',
+                                 'IL_rate1', 'IL_rate2', 'IL_rate3',
+                                 'SR_mean1', 'SR_mean2', 'SR_mean3',
+                                 'SR_std1', 'SR_std2', 'SR_std3',
+                                 'SR_rate1', 'SR_rate2', 'SR_rate3',
+                                 'MR_mean1', 'MR_mean2', 'MR_mean3',
+                                 'MR_std1', 'MR_std2', 'MR_std3',
+                                 'MR_rate1', 'MR_rate2', 'MR_rate3',
+                                 'IR_mean1', 'IR_mean2', 'IR_mean3',
+                                 'IR_std1', 'IR_std2', 'IR_std3',
+                                 'IR_rate1', 'IR_rate2', 'IR_rate3'])
 
 
+factor = 0.5
 # Iterate over the NIfTI files
-# for nifti_file in nifti_files:
-for pat in range(0,1):
+# for pat in range(2,3):
+for pat in range(0,len(nifti_files)):
     nifti_file = nifti_files[pat]
     print(nifti_file)
 
@@ -47,16 +71,18 @@ for pat in range(0,1):
     lung_mask_data = nib.load(lung_mask_path)
     lung_mask_array = np.array(lung_mask_data.get_fdata())
 
-    dataO, lung_mask = data_subsampling(nifti_array, lung_mask_array, factor=0.5)
+    dataO, lung_mask = data_subsampling(nifti_array, lung_mask_array, factor=factor)
 
+    left_lung, right_lung, trachea, vessels_mask = lung_separate(dataO, lung_mask)
+
+    # data = median_filter(dataO*((~vessels_mask)*(left_lung | right_lung)).astype(int), size=5)
     data = median_filter(dataO, size=5)
-
-    left_lung, right_lung, trachea, vessels_mask = lung_separate(data, lung_mask)
-
+    # data = data*(~vessels_mask)*(left_lung | right_lung)
+    data = data*(left_lung | right_lung)
     res=[]
 
     # # --------------- zkusebni odstavec
-    # path_save = os.path.join(nifti_path.replace('.nii.gz','_whole.png').replace('nifti','result_img'))
+    # path_save = os.path.join(nifti_path.replace('0.nii.gz','_whole.png').replace('nifti','result_img'))
     # gmW, val = int_analyze(data, (lung_mask==10), vessels_mask, path_save)
     # res.append(val.means_)
     # res.append(np.sqrt(val.covariances_))
@@ -64,57 +90,66 @@ for pat in range(0,1):
 
     # # global of whole lung
     path_save = os.path.join(nifti_path.replace('.nii.gz','_whole.png').replace('nifti','result_img'))
-    gmW, val = int_analyze(data, ((lung_mask<15) & (lung_mask>9)), vessels_mask, path_save)
+    gmW, val = int_analyze(data, ((left_lung) | (right_lung)), vessels_mask, path_save)
     res.append(val.means_)
     res.append(np.sqrt(val.covariances_))
     res.append(val.weights_)
 
-    # path_save = os.path.join(nifti_path.replace('.nii.gz','_Left.png').replace('nifti','result_img'))
-    # gm = int_analyze(data, left_lung, vessels_mask, path_save)
-    # res.append(gm.means_.squeeze().T)
-    # res.append(np.sqrt(gm.covariances_.squeeze()).T)
-    # res.append(gm.weights_.T)
+    pred = predict_mask(data, vessels_mask, ((left_lung) | (right_lung)), gmW)
+    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
+    pred = ndimage.zoom(pred, factorUp, order=0)
+    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
+    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_whole.nii.gz').replace('nifti','result_img'))
 
-    # path_save = os.path.join(nifti_path.replace('.nii.gz','_Right.png').replace('nifti','result_img'))
-    # gm = int_analyze(data, right_lung, vessels_mask, path_save)
-    # res.append(gm.means_.squeeze().T)
-    # res.append(np.sqrt(gm.covariances_.squeeze()).T)
-    # res.append(gm.weights_.T)
+    # # global of left lung
+    path_save = os.path.join(nifti_path.replace('.nii.gz','_Left.png').replace('nifti','result_img'))
+    gm, val = int_analyze(data, left_lung, vessels_mask, path_save)
+    res.append(val.means_)
+    res.append(np.sqrt(val.covariances_))
+    res.append(val.weights_)
+    predL = predict_mask(data, vessels_mask, left_lung, gm)
 
-    # parts = ['SL', 'IL', 'SR', 'MR', 'IR']
-    # k = 0
-    # for part in range(10,15):
-    #     print(part)
-    #     path_save = os.path.join(nifti_path.replace('.nii.gz','_'+parts[k]+'.png').replace('nifti','result_img'))
-    #     gm = int_analyze(data, lung_mask==part, vessels_mask, path_save)
-    #     res.append(gm.means_.squeeze())
-    #     res.append(np.sqrt(gm.covariances_.squeeze()))
-    #     res.append(gm.weights_)
-    #     print(res)
-    #     k+=1
+    # # global of rigth lung
+    path_save = os.path.join(nifti_path.replace('.nii.gz','_Right.png').replace('nifti','result_img'))
+    gm, val  = int_analyze(data, right_lung, vessels_mask, path_save)
+    res.append(val.means_)
+    res.append(np.sqrt(val.covariances_))
+    res.append(val.weights_)
+    predR = predict_mask(data, vessels_mask, right_lung, gm)
 
-    # # predict the cluster for each voxel of nifti data masked by lung mask by gmW
-    # lung_tissue = data.copy()
-    # lung_tissue[vessels_mask] = np.nan
-    # # lung_tissue[~((lung_mask<15) & (lung_mask>9))] = np.nan
-    # lung_tissue[~(lung_mask==10)] = np.nan
-    # lung_tissue_vekt = lung_tissue[~np.isnan(lung_tissue)].reshape(-1,1)
-    # lung_tissue_vekt[lung_tissue_vekt>-600] = -600
-    # lung_tissue_vekt = np.round(lung_tissue_vekt).astype(int)
-    # gmW_labels = gmW.predict(lung_tissue_vekt)
+    pred = predL + predR
+    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
+    pred = ndimage.zoom(pred, factorUp, order=0)
+    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
+    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_LR.nii.gz').replace('nifti','result_img'))
 
-    # labels = np.zeros_like(lung_tissue)
-    # labels[~np.isnan(lung_tissue)] = gmW_labels+1
+    # # partial of lung lobes
+    parts = ['SL', 'IL', 'SR', 'MR', 'IR']
+    k = 0
+    pred = np.zeros_like(data)
+    for part in range(10,15):
+        print(part)
+        path_save = os.path.join(nifti_path.replace('.nii.gz','_'+parts[k]+'.png').replace('nifti','result_img'))
+        gm, val  = int_analyze(data, lung_mask==part, vessels_mask, path_save)
+        res.append(val.means_)
+        res.append(np.sqrt(val.covariances_))
+        res.append(val.weights_)
+        predTemp = predict_mask(data, vessels_mask, lung_mask==part, gm)
+        pred = pred + predTemp
+        k+=1
+    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
+    pred = ndimage.zoom(pred, factorUp, order=0)
+    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
+    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_partial.nii.gz').replace('nifti','result_img'))
+    nib.save(nifti_data, nifti_path.replace('.nii.gz','_original.nii.gz').replace('nifti','result_img'))
 
-    # labels = labels.reshape(lung_tissue.shape)
-
-    # convert res to numpy matrix
+    # # convert res to numpy matrix
     res = np.array(res)
 
     # save the results to xlsx file for each patient as one raw in excel files
-    results.loc[pat] = [nifti_file]+res.flatten().tolist()
+    results.loc[pat] = [nifti_file.replace('.nii.gz','')]+res.flatten().tolist()
     
-results.to_excel(data_dir.replace('nifti','')+'results.xlsx', index=False)
+results.to_excel(data_dir.replace('nifti','')+'results_intensity.xlsx', index=False)
 
 
 # viewer = napari.Viewer()
@@ -123,5 +158,5 @@ results.to_excel(data_dir.replace('nifti','')+'results.xlsx', index=False)
 # napari.run()
 
 # viewer = napari.Viewer()
-# viewer.add_image(labels, name='lung tissue')
+# viewer.add_image(vessels_mask)
 # napari.run()
