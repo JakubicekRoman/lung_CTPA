@@ -15,12 +15,6 @@ folders = [f for f in os.listdir(dicom_folder) if os.path.isdir(os.path.join(dic
 output_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\nifti'
 os.makedirs(output_folder, exist_ok=True)
 
-# run Run dcm2niix command to convert each DICOM in path folders to NIfTI
-# for folder in folders:
-#     print(f"Converting DICOM files in folder {folder} to NIfTI...")
-#     subprocess.run(['dcm2niix', '-o', output_folder, os.path.join(dicom_folder, folder)])
-#     print(f"Conversion of folder {folder} has been finished")
-
 for folder in folders:
     # Run dcm2niix command to convert each DICOM in path folders to NIfTI
     subprocess.run(['dcm2niix.exe', '-z','y', '-f', folder , '-o', output_folder, 

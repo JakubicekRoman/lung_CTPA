@@ -6,7 +6,7 @@ clc
 
 
 %%
-t = readtable('data\results_int.xlsx');
+t = readtable('data\results_intensity.xlsx');
 data = table2array(t(:,2:end));
 
 
@@ -49,7 +49,7 @@ hold off;
 
 %% 2D
 
-tsne_results = tsne(data, 'NumDimensions', 2,'Algorithm','exact','Standardize',true,'NumPCAComponents',15);
+tsne_results = tsne(data, 'NumDimensions', 2,'Algorithm','exact','Standardize',true,'NumPCAComponents',10);
 
 
 % Plot the t-SNE results

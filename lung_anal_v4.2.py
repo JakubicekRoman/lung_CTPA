@@ -33,8 +33,8 @@ data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\result_img'
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('original.nii.gz')]
 
 factor = 0.5
-for pat in [1]:
-# for pat in range(0,len(nifti_files)):
+# for pat in [1]:
+for pat in range(0,len(nifti_files)):
 
     nifti_file = nifti_files[pat]
     print(nifti_file)

@@ -6,8 +6,8 @@ from totalsegmentator.python_api import totalsegmentator
 import sys
 
 # Specify the folder path where the NIfTI files are located
-folder_data_path = r'D:\Projekty\CTPA_VFN\data\nifti'
-folder_mask_path = r'D:\Projekty\CTPA_VFN\data\masks\\'
+folder_data_path = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\nifti'
+folder_mask_path = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\masks\\'
 os.makedirs(folder_mask_path, exist_ok=True)
 
 # Get a list of all NIfTI files in the folder

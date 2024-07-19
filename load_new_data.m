@@ -17,6 +17,10 @@ for i = 1:49
     ID{i,1} = [info.StudyID '0'];
 end
 
+ID = sort(ID);
+
 % img = dicomreadVolume(dcm(1,"Filenames"));
 % imshow5(squeeze(img))
+
+save('dcm_list.mat','dcm')
 
