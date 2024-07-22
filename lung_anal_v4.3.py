@@ -71,8 +71,8 @@ results = pd.DataFrame(columns=['file','right_slope','right_rate_L1_1','right_ra
 # Iterate over the NIfTI files
 # for nifti_file in nifti_files:
 
-# for pat in range(0,len(nifti_files)):
-for pat in range(1,2):
+for pat in range(0,len(nifti_files)):
+# for pat in range(0,2):
     nifti_file = nifti_files[pat]
     print(nifti_file)
 
@@ -103,20 +103,31 @@ for pat in range(1,2):
     m = np.max(label(pulmonary_vein,connectivity=1), axis=(0,1,2))
     # print(m)
 
-    for i in range(0,10):
+    for i in range(0,20):
         if m > 2:
             pulmonary_vein = binary_dilation(pulmonary_vein, iterations=1, structure=morph_anal.vol_strel())
             m = np.max(label(pulmonary_vein,connectivity=1), axis=(0,1,2))
             # print(m)
         else:
             break
+    
+    if np.max(label(pulmonary_vein,connectivity=1), axis=(0,1,2)) == 1:
+        pulmonary_vein = (lung_mask_array == 53)
+        m = np.max(label(pulmonary_vein,connectivity=1), axis=(0,1,2))
+        for i in range(0,20):
+            if m > 3:
+                pulmonary_vein = binary_dilation(pulmonary_vein, iterations=1, structure=morph_anal.vol_strel())
+                m = np.max(label(pulmonary_vein,connectivity=1), axis=(0,1,2))
+                # print(m)
+            else:
+                pulmonary_vein = morph_anal.find_objects(pulmonary_vein, num_objects=2)
+                break
 
     pulmonary_vein = label(pulmonary_vein,connectivity=1)
 
     # pulmonary_vein = binary_dilation(pulmonary_vein, iterations=7, structure=morph_anal.vol_strel())
     # pulmonary_vein = binary_erosion(pulmonary_vein, iterations=5)
     # find two largest binary objects in the pulmonary_vein mask and remain only them
-
     # pulmonary_vein = morph_anal.find_objects(pulmonary_vein, num_objects=2)
 
     positions1 = np.mean(np.argwhere(pulmonary_vein == 1), axis=0)
@@ -134,60 +145,50 @@ for pat in range(1,2):
         if part==0:
             mask_part = right_lung.copy()
             H = positions1.copy()
-            max_H = 0.5
-            # r = 0.85 *2 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            max_H = 0.45 # vetsi znamena posouvani k hilu
+            dil_contr = 20
         elif part==1:
             mask_part = left_lung.copy()
             H = positions2.copy()
-            max_H = 0.5
-            # r = 0.85 * 2 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            max_H = 0.45
+            dil_contr = 20
         elif part==2:
             mask_part = lung_mask_array==10
             H = positions2.copy()
             max_H = 0.35
-            # r = 0.75 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            dil_contr = 15
         elif part==3:
             mask_part = lung_mask_array==11
             H = positions2.copy()
             max_H = 0.35
-            # r = 0.75 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            dil_contr = 15
         elif part==4:
             mask_part = lung_mask_array==12
             H = positions1.copy()
             max_H = 0.35
-            # r = 0.6 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            dil_contr = 20
         elif part==5:
             mask_part = lung_mask_array==13
             H = positions1.copy()
-            max_H = 0.35
-            # r = 0.8 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            max_H = 0.3
+            dil_contr = 15
         elif part==6:
             mask_part = lung_mask_array==14
             H = positions1.copy()
             max_H = 0.35
-            # r = 0.8 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
+            dil_contr = 15
 
-        # r = 0.9 *2 * np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2))
-        # r = 30
-        # print(0.9* np.sqrt(np.sum((np.mean(np.argwhere(mask_part), axis=0) - (H))**2)))
-        # print(r)
         hyl = np.zeros_like(mask_part, dtype=np.bool_)
         hyl[int(H[0]), int(H[1]), int(H[2])] = True
         dist_map_H = distance_transform_edt(~hyl)
 
         # create contour of lung mask
         contour = mask_part & ~binary_erosion(mask_part > 0, iterations=1)
-        # remove white pixels from the contour lying inside of circle with radius 50 and center in the hylus
-        
-        # contour = (contour > 0) & ~(dist_map_H < r)
-
-        # structural elemnt in 3D for dilation
-
-        contour = (contour > 0) & ~(binary_dilation(pulmonary_vein, iterations=dil_contr,structure=morph_anal.vol_strel()) > 0)
+        contour = (contour > 0) & ~(binary_dilation((lung_mask_array == 53), iterations=dil_contr,structure=morph_anal.vol_strel()) > 0)
+        # contour = contour * ~(binary_dilation((nifti_array < 550) & (nifti_array > 450), iterations=1,structure=morph_anal.vol_strel()))
 
         # contour = morph_anal.find_objects(contour, num_objects=1)
         dist_map_Contr = distance_transform_edt(~contour)
-
         dist_map = ( ( dist_map_Contr ) / ( dist_map_Contr + dist_map_H ) ) * mask_part
 
 # viewer = napari.Viewer()
@@ -294,6 +295,7 @@ for pat in range(1,2):
 
 
 results.to_excel(data_dir.replace('\\result_img','')+'\\results_periphery.xlsx', index=False)
+
 
 # viewer = napari.Viewer()
 # viewer.add_image((labels==1) | (left_lung>0), name='lung tissue')

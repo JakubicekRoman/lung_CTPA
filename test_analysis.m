@@ -16,15 +16,15 @@ data = table2array(t(:,2:end));
 
 
 %%
-t = readtable('data\results_periferie.xlsx');
+t = readtable('data\results_periphery.xlsx');
 data = table2array(t(:,2:end));
 
 data(isnan(data)) = 0;
 
 %%
-t1 = readtable('data\results_int.xlsx');
+t1 = readtable('data\results_intensity.xlsx');
 t2 = readtable('data\results_entrop.xlsx');
-t3 = readtable('data\results_periferie.xlsx');
+t3 = readtable('data\results_periphery.xlsx');
 data = cat(2, table2array(t1(:,2:end)), table2array(t2(:,2:end)) , table2array(t3(:,2:end)) ) ;
 
 data(isnan(data)) = 0;
@@ -65,3 +65,15 @@ for i = 1:size(tsne_results, 1)
     text(tsne_results(i,1), tsne_results(i,2), num2str(i), 'FontSize', 16, 'HorizontalAlignment', 'right');
 end
 hold off;
+
+
+%% korelační analýza
+
+correlationMatrix = corrcoef(data);
+
+figure;
+heatmap(correlationMatrix, 'Colormap', jet, 'ColorLimits', [-1 1]);
+title('Korelační matice příznaků');
+xlabel('Příznaky');
+ylabel('Příznaky');
+
