@@ -19,7 +19,7 @@ import openpyxl
 from scipy.stats import entropy
 
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\nifti'
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\nifti'
 
 # create new folder
 if not os.path.exists(data_dir.replace('nifti','result_img')):

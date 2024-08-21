@@ -55,7 +55,7 @@ class morph_anal:
         return structure
 
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\result_img'
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\result_img'
 
 # Get a list of all NIfTI files in the directory
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('original.nii.gz')]

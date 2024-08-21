@@ -1,0 +1,131 @@
+%% t-sne
+
+clear all
+close all
+clc
+
+
+%%
+tab = readtable('data\RJCrossCorr01.xlsx');
+data = table2array(tab(:,1:end));
+
+data(isnan(data)) = 0;
+
+
+%% 3d
+tsne_results = tsne(data, 'NumDimensions', 3,'Algorithm','exact','Standardize',true,'NumPCAComponents',15);
+
+% Plot the t-SNE results in 3D
+figure;
+scatter3(tsne_results(:,1), tsne_results(:,2), tsne_results(:,3), 'filled');
+title('t-SNE results');
+xlabel('Dimension 1');
+ylabel('Dimension 2');
+zlabel('Dimension 3');
+grid on;
+
+hold on;
+for i = 1:size(tsne_results, 1)
+    text(tsne_results(i,1), tsne_results(i,2), tsne_results(i,3), num2str(i), 'FontSize', 26, 'HorizontalAlignment', 'right');
+end
+hold off;
+
+%% 2D
+
+tsne_results = tsne(data, 'NumDimensions', 2,'Algorithm','exact','Standardize',true,'NumPCAComponents',10);
+
+
+% Plot the t-SNE results
+figure;
+scatter(tsne_results(:,1), tsne_results(:,2), 'filled');
+title('t-SNE results');
+xlabel('Dimension 1');
+ylabel('Dimension 2');
+grid on;
+
+hold on;
+for i = 1:size(tsne_results, 1)
+    text(tsne_results(i,1), tsne_results(i,2), num2str(i), 'FontSize', 16, 'HorizontalAlignment', 'right');
+end
+hold off;
+
+
+%% korelační analýza
+
+% correlationMatrix = corrcoef(data(:,1:end));
+[correlationMatrix, p] = corrcoef(data);
+
+anova(data)
+
+% correlationMatrix = correlationMatrix(1:99,100:end);
+% p = p(1:99,100:end);
+
+figure;
+heatmap(p, 'Colormap', jet, 'ColorLimits', [0 1]);
+title('Hodnotz p');
+xlabel('Příznaky');
+ylabel('Příznaky');
+
+figure;
+heatmap(correlationMatrix, 'Colormap', jet, 'ColorLimits', [-1 1]);
+title('Korelační matice příznaků');
+xlabel('Příznaky');
+ylabel('Příznaky');
+
+
+%% zobrazeni boxploty
+close all
+tab2 = tab(~isnan(tab{:,end}),:);
+
+Feats = 100:250;
+Params = 1:99;
+
+for i = 1:length(Feats)
+    for ii = 1:length(Params)
+        X = tab2{:,Feats(i)};
+        Group = tab2{:, Params(ii)};
+        p = anova1(X, Group);
+        title(gcf().Children,[ tab2.Properties.VariableNames{Feats(i)} '-' tab2.Properties.VariableNames{Params(ii)}])
+        saveas(gcf,['img_export\'  sprintf('%03d', i) '_' sprintf('%03d', ii) '.png'])
+        close all
+        p_values(i,ii) = p;
+    end
+end
+
+
+%% imshow matrix
+
+clear all
+
+tab = readtable('data\RJCrossCorr01.xlsx');
+tab2 = tab(~isnan(tab{:,end}),:);
+
+load('anova_matrix.mat')
+
+Groups = tab2(:,[1:99]);
+Groups(:,[4:8,20,21,47:71,78:98]) = [];
+Feats = tab2(:,[100:250]);
+
+p_values(:,[4:8,20,21,47:71,78:98]) = [];
+
+grps = strrep(Groups.Properties.VariableNames, '_',' ');
+fts = strrep(Feats.Properties.VariableNames, '_',' ');
+
+grpsO = strrep(tab2(:,[1:99]).Properties.VariableNames, '_',' ');
+ftsO = strrep(tab2(:,[100:250]).Properties.VariableNames, '_',' ');
+
+%%
+p_values2 = p_values;
+p_values2(p_values2>0.05) = 0.05;
+figure(1)
+cm = colormap("sky");
+cm = flip(cm,1);
+imagesc(p_values2)
+colormap(cm)
+set(gca,'XTick', [1:length(grps)])
+set(gca,'XTickLabel', grps)
+set(gca,'YTick', [1:length(fts)])
+set(gca,'YTickLabel', fts)
+colorbar
+
+saveas(gcf,'AnovaMatrix.eps','eps')
