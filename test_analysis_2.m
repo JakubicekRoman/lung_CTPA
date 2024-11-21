@@ -97,7 +97,7 @@ end
 
 clear all
 
-tab = readtable('data\RJCrossCorr01.xlsx');
+tab = readtable('data\data1\RJCrossCorr01.xlsx');
 tab2 = tab(~isnan(tab{:,end}),:);
 
 load('anova_matrix.mat')

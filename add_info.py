@@ -7,8 +7,8 @@ import pydicom
 # read excels tables and add information to the database
 # paths to excels files
 
-excels_path = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2'
-dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\dicoms'
+excels_path = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3'
+dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\dicoms'
 
 excels_files = [file for file in os.listdir(excels_path) if file.endswith('y.xlsx')]
 

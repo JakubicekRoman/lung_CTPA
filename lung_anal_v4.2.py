@@ -27,7 +27,7 @@ results = pd.DataFrame(columns=['file', 'whole_1_entropy', 'whole_1_num_max', 'w
                                 'right_2_entropy', 'right_2_num_max', 'right_2_max', 'right_2_mean', 'right_2_surf'
                                 ])
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\result_img'
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\result_img'
 
 # Get a list of all NIfTI files in the directory
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('original.nii.gz')]

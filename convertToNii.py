@@ -7,13 +7,14 @@ import subprocess
 
 # Path to the folder containing DICOM files
 # dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\dicoms'
-dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\dicoms2'
+# dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\dicoms'
+dicom_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\dicoms'
 
 # find all folders in this path
 folders = [f for f in os.listdir(dicom_folder) if os.path.isdir(os.path.join(dicom_folder, f))]
 
 # Path to the output folder for NIfTI files
-output_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\nifti2'
+output_folder = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\nifti'
 os.makedirs(output_folder, exist_ok=True)
 
 for folder in folders:

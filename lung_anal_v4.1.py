@@ -18,8 +18,8 @@ from utils import int_analyze, data_subsampling, lung_separate, predict_mask
 import openpyxl
 from scipy.stats import entropy
 
-
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\nifti'
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\nifti'
+# data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\nifti'
 
 # create new folder
 if not os.path.exists(data_dir.replace('nifti','result_img')):
@@ -54,12 +54,16 @@ results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mea
                                  'IR_rate1', 'IR_rate2', 'IR_rate3'])
 
 
+
+# nifti_files = [nifti_files[41]]    # export image for paper of one patient
+
 factor = 0.5
 # Iterate over the NIfTI files
 # for pat in range(2,3):
 for pat in range(0,len(nifti_files)):
     nifti_file = nifti_files[pat]
     print(nifti_file)
+    print(str(pat/len(nifti_files)*100)+'%')
 
     nifti_path = os.path.join(data_dir, nifti_file)
     nifti_data = nib.load(nifti_path)
@@ -128,7 +132,7 @@ for pat in range(0,len(nifti_files)):
     k = 0
     pred = np.zeros_like(data)
     for part in range(10,15):
-        print(part)
+        # print(part)
         path_save = os.path.join(nifti_path.replace('.nii.gz','_'+parts[k]+'.png').replace('nifti','result_img'))
         gm, val  = int_analyze(data, lung_mask==part, vessels_mask, path_save)
         res.append(val.means_)

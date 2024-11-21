@@ -139,10 +139,11 @@ def display_hist(data, gm, file_path):
     x = np.linspace(-500, -1000, 1000)
     x = np.expand_dims(x, axis=1)
     y = np.zeros_like(x)
-    for i in range(len(gm.weights_)):
+    for i in [1,0,2]:
         y = y + gm.weights_[i]*np.exp(-0.5*(x-gm.means_[i])**2/gm.covariances_[i])/np.sqrt(2*np.pi*gm.covariances_[i])
         plt.plot(x, gm.weights_[i]*np.exp(-0.5*(x-gm.means_[i])**2/gm.covariances_[i])/np.sqrt(2*np.pi*gm.covariances_[i]))
     plt.plot(x, y)
+    plt.xlim(-1000, -600)
     plt.show()
     # save the figure with plot as png image file
     plt.savefig(file_path, format='png')

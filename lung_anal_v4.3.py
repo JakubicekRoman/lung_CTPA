@@ -55,7 +55,7 @@ class morph_anal:
         return structure
 
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data2\result_img'
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\result_img'
 
 # Get a list of all NIfTI files in the directory
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('original.nii.gz')]
@@ -71,8 +71,9 @@ results = pd.DataFrame(columns=['file','right_slope','right_rate_L1_1','right_ra
 # Iterate over the NIfTI files
 # for nifti_file in nifti_files:
 
-for pat in range(0,len(nifti_files)):
-# for pat in range(0,2):
+# for pat in range(0,len(nifti_files)):
+# for pat in range(0,42):
+for pat in [42,43]:
     nifti_file = nifti_files[pat]
     print(nifti_file)
 
@@ -139,8 +140,8 @@ for pat in range(0,len(nifti_files)):
 
     bin2 = np.zeros_like(nifti_array, dtype=np.bool_)
 
-    for part in [0,1,2,3,4,5,6]:
-    # for part in [0,1]:
+    # for part in [0,1,2,3,4,5,6]:
+    for part in [0,1]:
     # for part in [2,3,4,5,6]:
         if part==0:
             mask_part = right_lung.copy()
@@ -191,11 +192,14 @@ for pat in range(0,len(nifti_files)):
         dist_map_Contr = distance_transform_edt(~contour)
         dist_map = ( ( dist_map_Contr ) / ( dist_map_Contr + dist_map_H ) ) * mask_part
 
-# viewer = napari.Viewer()
-# viewer.add_image(dist_map)
-# napari.run()
+        # viewer = napari.Viewer()
+        # viewer.add_image(dist_map)
+        # viewer.add_image((nifti_array) , name='lung tissue')
+        # napari.run()
 
-        num = 11
+        # num = 11
+        num = 21 # for visualization
+
         steps_thr = np.linspace(0,max_H,num)
         step = steps_thr[1] - steps_thr[0]
 
@@ -252,18 +256,23 @@ for pat in range(0,len(nifti_files)):
 
         # fit linear curve to the data valM and give me the slope and ignore nan values
         valM2 = valM[~np.isnan(valM)]
+        valM2 = valM2[::-1]
         ind2 = np.linspace(0,1,len(valM))[~np.isnan(valM)]
         slope, bias = np.polyfit(ind2, valM2, 1)
 
-        # plt.plot(ind2, valM2)
-        # # show fitted line in the plot
-        # x = np.linspace(0,1,100)
-        # y = slope*x + bias
-        # plt.plot(x, y)
-        # plt.xlabel('Relative distance from hilus')
-        # plt.ylabel('Mean intensity in contour')
-        # # plt.ylim(-830, -650)
-        # plt.show()
+        plt.ion()
+        plt.plot(ind2, valM2, '+')
+        # plt.plot(ind2, valM2, 'b')
+        # show fitted line in the plot
+        x = np.linspace(0,1,100)
+        y = slope*x + bias
+        plt.plot(x, y, 'r' )
+        plt.xlabel('Relative distance from hilum to pleura')
+        plt.ylabel('Mean Attenuation [HU] in contour')
+        plt.ylim(-840, -660)
+        plt.show()
+        plt.savefig(nifti_path.replace('_original.nii.gz','_slope'+ str(part) + '.png'), format='png')
+        plt.close()
 
         res.append( slope )
         res.append( np.nanmean(valL1[0:3]) )
@@ -290,11 +299,11 @@ for pat in range(0,len(nifti_files)):
             nib.save(periph_nifti, nifti_path.replace('_original.nii.gz','_regions_lobes.nii.gz'))
             bin2 = np.zeros_like(nifti_array, dtype=np.bool_)
 
-    res = np.array(res)
-    results.loc[pat] = [nifti_file.replace('_original.nii.gz','')]+res.flatten().tolist()
+    # res = np.array(res)
+    # results.loc[pat] = [nifti_file.replace('_original.nii.gz','')]+res.flatten().tolist()
 
 
-results.to_excel(data_dir.replace('\\result_img','')+'\\results_periphery.xlsx', index=False)
+# results.to_excel(data_dir.replace('\\result_img','')+'\\results_periphery.xlsx', index=False)
 
 
 # viewer = napari.Viewer()
