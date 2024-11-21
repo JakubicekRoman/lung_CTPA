@@ -2,7 +2,7 @@
 *.mat
 stat_anal_img_export/*
 *.png
-.vscode
-.vs
-.venv
-__pycache__
+.vscode/*
+.vs/*
+.venv/*
+__pycache__/*
