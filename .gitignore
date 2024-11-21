@@ -5,3 +5,4 @@ stat_anal_img_export/*
 .vscode
 .vs
 .venv
+__pycache__
