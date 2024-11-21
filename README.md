@@ -7,9 +7,15 @@ A tool for the vessel segmentation in AO images based on segmentation neural net
 
 General information about this tool:
 
-* It works with folder containing png images
-* A "Input path" to a folder containing png files is required as input
-* Output segmentation masks are saved into user's given "Output path" as set of png images
+* It works for folder containing dicom files (alternativelly for nifti files)
+* The algorithm has three basic steps
+  * resaving dicom files to nifti format (can you skip this)
+  * lung segmentation using TotalSegmentator
+  * quantification of lung mosaic:
+    * intensity analysis
+    * heterogenuity analysis
+    * centralization analysis
+* output is excel files with quantificated values for each patient folder
 
 
 ## Requirements
