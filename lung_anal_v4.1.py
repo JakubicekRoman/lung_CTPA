@@ -155,7 +155,6 @@ for pat in range(0,len(nifti_files)):
     
 results.to_excel(data_dir.replace('nifti','')+'results_intensity.xlsx', index=False)
 
-
 # viewer = napari.Viewer()
 # viewer.add_image(dataO, name='lung tissue', contrast_limits=[-1000, -500])
 # viewer.add_labels(labels.astype(int), name='GMM whole lung')

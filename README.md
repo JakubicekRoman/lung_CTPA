@@ -7,20 +7,19 @@ A tool for the vessel segmentation in AO images based on segmentation neural net
 
 General information about this tool:
 
-* It works for folder containing dicom files (alternativelly for nifti files)
+* It works for folder containing dicom files
 * The algorithm has three basic steps
-  * resaving dicom files to nifti format (can you skip this)
-  * lung segmentation using TotalSegmentator
-  * quantification of lung mosaic:
+  * resaving dicom files to nifti format using dcm2niix [1]
+  * lung segmentation using TotalSegmentator [2]
+  * automated quantification of lung mosaic:
     * intensity analysis
-    * heterogenuity analysis
+    * heterogeneity analysis
     * centralization analysis
-* output is excel files with quantificated values for each patient folder
-
+* output is an excel file with characterization values for each patient folder
 
 ## Requirements
 * virtual environment
-* python version 3.10
+* installed python (tested on 3.10 version)
 * installed pip and venv
 
 ## Virtual environment
@@ -35,41 +34,73 @@ cd .\lung_CTPA\
 ```
 * for PIP installation, check Python version (major version ```python3 --version``` and all installed versions ```ls -ls /usr/bin/python*```)
 
-Install python, pip and venv (if not already):
+Install python (if not already):
+download [**here**](https://www.python.org/downloads/)
+
 ```
-sudo apt install python3.10
-sudo apt install python3-pip
-sudo apt install python3.10-venv
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+pip install virtualenv
 ```
 
 Create virtual environment:
 ```
-python3.10 -m venv ".\.venv\lung_CTPA"
+python3.10 -m venv ".\.venv"
 ```
 
 Activate venv
 ```
-.\.venv\lung_CTPA\bin\activate
+.\.venv\Scripts\activate
 ```
 
-Install the packages from .txt file:
+Install the required packages from .txt file:
 ```
 python3 -m pip install -r requirements.txt
+```
+
+## Data directory structure
+All data needs to be **dicom** files and one patient (case) needs to be in an single folder 
+Example of directory structure of two patient data:
+```
+... PATH_DICOM_DATA\
+
++---S44670 
+|   +---S40
+|   |       DIRFILE
+|   |       I10
+|   |       I100
+|   |       I100
+|   |       ...
++---S44660
+|      DIRFILE
+|      I10
+|      I100
+|      ...
+...
 ```
 
 ## Calling of the program:
 
 ### 1st step
-Converting dicom data to nifti files (fucntion calling dcm2niix). You may call dcm2niix directly, but this function extracts also patient's information from dicom header and save that into results excel file. If you have own nifti files, the results excel file will not contain patient info, only name of folder (series)
+Converting dicom data to nifti files (function calling dcm2niix). You may call dcm2niix directly, but this function extracts also patient's information from dicom header and save that into results excel file. If you have own nifti files, the results excel file will not contain patient info, only name of folder (series)
 ```
-python3 covnertToNii.py -h
-python3 covnertToNii.py --input folder_with_dicoms --output folder_for_saving
+python3 LungAnalysis.py -h
+python3 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 ```
 
 Example of calling:
 ```
-
+python3 convertToNii.py --input .\data\dicoms --output .\data\results
 ```
 
-### 2nd step
+## Licence
+The tool is possible to use for academic and reseach purposes (MIT License). The proposed approach was submitted to ... 
+Please cite the following paper when using tool:
+It will be added!
 
+## References
+[1] Chris Rorden. "dcm2niix: Next-generation DICOM to NIfTI conversion." (2022). 
+Available from: https://github.com/rordenlab/dcm2niix
+
+[2] Wasserthal, Jakob et al. “TotalSegmentator: Robust Segmentation of 104 Anatomic Structures in CT Images.” Radiology. Artificial intelligence vol. 5,5 e230024. 5 Jul. 2023, doi:10.1148/ryai.230024
+GitHub: https://github.com/wasserth/TotalSegmentator

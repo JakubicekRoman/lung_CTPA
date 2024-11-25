@@ -18,10 +18,7 @@ folders = [f for f in os.listdir(dicom_folder) if os.path.isdir(os.path.join(dic
 # Path to the output folder for NIfTI files
 os.makedirs(output_folder, exist_ok=True)
 
-print("Start resaving DICOM files to NIfTI")
-print("Input folder: ", dicom_folder)
-print("Output folder: ", output_folder)
-print("there are ", len(folders), " found folders")
+print("There are ", len(folders), " found cases")
 
 for folder in folders:
     # Run dcm2niix command to convert each DICOM in path folders to NIfTI
@@ -29,5 +26,5 @@ for folder in folders:
                     os.path.join(dicom_folder, folder)])
 
 print("-------------------------")
-print("Resaving has been finished")
+print("Converting to Nifti has been finished")
 
