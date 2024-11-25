@@ -4,6 +4,7 @@ import argparse
 import sys
 import nibabel as nib
 from totalsegmentator.python_api import totalsegmentator
+import pandas as pd
 
 # Path to the folder containing DICOM files
 parser = argparse.ArgumentParser()
@@ -30,8 +31,21 @@ os.makedirs(args.output, exist_ok=True)
 print("Input folder: ", data_folder)
 print("Output folder: ", args.output)
 
-convertToNii = os.path.join(os.path.dirname(os.path.abspath(__file__)),'convertToNii.py')
-subprocess.run(['python', convertToNii, '-i', data_folder, '-o', args.output])
+# convertToNii = os.path.join(os.path.dirname(os.path.abspath(__file__)),'convertToNii.py')
+# subprocess.run(['python', convertToNii, '-i', data_folder, '-o', args.output])
 
-lung_segm = os.path.join(os.path.dirname(os.path.abspath(__file__)),'lung_segm.py')
-subprocess.run(['python', lung_segm, '-i', args.output])
+# lung_segm = os.path.join(os.path.dirname(os.path.abspath(__file__)),'lung_segm.py')
+# subprocess.run(['python', lung_segm, '-i', args.output])
+
+df = pd.DataFrame(columns=['Folder_name'])
+
+df.insert(1, 'Patient Name', 'Patient Name')
+df.insert(2, 'Patient ID', 'Patient ID')
+df.insert(3, 'Accession No', 'Accession No')
+df.insert(4, 'Date', 'Date')
+
+df.to_excel(os.path.join( args.output , 'Outcomes.xlsx'), index=False)
+
+
+# anal_1 = os.path.join(os.path.dirname(os.path.abspath(__file__)),'lung_segm.py')
+# subprocess.run(['python', lung_segm, '-i', args.output])

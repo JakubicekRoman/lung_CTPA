@@ -1,5 +1,5 @@
 import os
-from totalsegmentator.python_api import totalsegmentator
+# from totalsegmentator.python_api import totalsegmentator
 import sys
 import argparse
 
@@ -30,7 +30,7 @@ for file in nifti_files:
 
     lung_parts = 'pulmonary_vein trachea lung_upper_lobe_left lung_upper_lobe_right lung_middle_lobe_right lung_lower_lobe_left lung_lower_lobe_right'
     # os.system('totalsegmentator -i {} -o {} --task {} --roi_subset {} --fast --verbose -ml'.format(file_dada_path, file_output_path, 'total',lung_parts))
-    os.system('totalsegmentator -i {} -o {} --task {} --roi_subset {} --fast -ml'.format(file_dada_path, file_output_path, 'total',lung_parts))
+    os.system('TotalSegmentator.exe -i {} -o {} --task {} --roi_subset {} --fast -ml'.format(file_dada_path, file_output_path, 'total',lung_parts))
 
 print("Segmentation has been finished")
 

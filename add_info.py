@@ -20,8 +20,6 @@ excels_files = [file for file in os.listdir(excels_path) if file.endswith('y.xls
 for num_file in range(len(excels_files)):
     df = pd.read_excel(os.path.join(excels_path, excels_files[num_file]))
 
-    # add column to the database
-    # at specific position
     df.insert(1, 'Patient Name', 'Patient Name')
     df.insert(2, 'Patient ID', 'Patient ID')
     df.insert(3, 'Accession No', 'Accession No')

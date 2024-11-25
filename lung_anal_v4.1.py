@@ -1,32 +1,30 @@
 import os
 import numpy as np
 import nibabel as nib
-import napari
-from scipy.ndimage import binary_erosion, binary_dilation
-from skimage.morphology import skeletonize
-# from scipy.ndimage import binary_hit_or_miss 
-import matplotlib.pyplot as plt
-from scipy.ndimage import distance_transform_edt
-from scipy import ndimage
-from scipy.interpolate import griddata
-from utils import display_orthogonal_views
-from sklearn.cluster import KMeans
 from scipy.ndimage import median_filter
 import pandas as pd
 from scipy import ndimage
 from utils import int_analyze, data_subsampling, lung_separate, predict_mask
 import openpyxl
-from scipy.stats import entropy
+import sys
+import argparse
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\nifti'
-# data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\nifti'
+# Path to the folder containing DICOM files
+parser = argparse.ArgumentParser()
+parser.add_argument('-i','--input', action='store',  help="Path to folder with input resaved nifti files")
 
-# create new folder
-if not os.path.exists(data_dir.replace('nifti','result_img')):
-    os.makedirs(data_dir.replace('nifti','result_img'))
+args = parser.parse_args()
+
+if args.input is None:
+    sys.exit("Input folder does not specified")    
+    
+data_folder = args.input
+if not os.path.exists(data_folder):
+    sys.exit("Input folder does not exist")
+
 
 # Get a list of all NIfTI files in the directory
-nifti_files = [file for file in os.listdir(data_dir) if file.endswith('.nii.gz')]
+nifti_files = [file for file in os.listdir(args.input) if file.endswith('_segm.nii.gz')]
 
 results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mean3',
                                 'Whole_std1', 'Whole_std2', 'Whole_std3', 

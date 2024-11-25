@@ -81,8 +81,8 @@ Example of directory structure of two patient data:
 
 ## Calling of the program:
 
-### 1st step
-Converting dicom data to nifti files (function calling dcm2niix). You may call dcm2niix directly, but this function extracts also patient's information from dicom header and save that into results excel file. If you have own nifti files, the results excel file will not contain patient info, only name of folder (series)
+Call Ii the command window with activated virtual enviroment:
+
 ```
 python3 LungAnalysis.py -h
 python3 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
@@ -90,13 +90,14 @@ python3 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 
 Example of calling:
 ```
-python3 convertToNii.py --input .\data\dicoms --output .\data\results
+python3 LungAnalysis.py --input .\data\dicoms --output .\data\results
+python3 LungAnalysis.py --input .\data\dicoms
 ```
 
 ## Licence
 The tool is possible to use for academic and reseach purposes (MIT License). The proposed approach was submitted to ... 
 Please cite the following paper when using tool:
-It will be added!
+---- It will be added!
 
 ## References
 [1] Chris Rorden. "dcm2niix: Next-generation DICOM to NIfTI conversion." (2022). 
