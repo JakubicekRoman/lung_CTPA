@@ -1,5 +1,4 @@
 import os
-# from totalsegmentator.python_api import totalsegmentator
 import sys
 import argparse
 

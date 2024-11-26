@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt     
-from sklearn.preprocessing import StandardScaler
 from sklearn.mixture import BayesianGaussianMixture, GaussianMixture
 from scipy import ndimage
 from scipy.ndimage import binary_erosion, binary_dilation
 import os
+from scipy.ndimage import distance_transform_edt
+from skimage.measure import label
+
 
 def display_orthogonal_views(volume, slice_index=None, save_path=None):
     """
@@ -85,8 +87,9 @@ def int_analyze(data, mask, vessels, file_path):
 
     lung_tissue_vekt = lung_tissue[~np.isnan(lung_tissue)].reshape(-1,1)
     lung_tissue_vekt = np.round(lung_tissue_vekt).astype(int)
-    gm = BayesianGaussianMixture(n_components=3, random_state=42).fit(lung_tissue_vekt)
-    # gm = GaussianMixture(n_components=3, random_state=42).fit(lung_tissue_vekt)
+    # gm = BayesianGaussianMixture(n_components=3,random_state=42).fit(lung_tissue_vekt)
+    # gm = BayesianGaussianMixture(n_components=3,random_state=42,tol=1e-1,max_iter=500,init_params='k-means++').fit(lung_tissue_vekt)
+    gm = GaussianMixture(n_components=3, random_state=42).fit(lung_tissue_vekt)
 
     # sort the means and save indexes which them sort others
     indx = np.argsort(gm.means_.squeeze())
@@ -148,3 +151,88 @@ def display_hist(data, gm, file_path):
     # save the figure with plot as png image file
     plt.savefig(file_path, format='png')
     plt.close()
+
+
+    
+
+class morph_anal:
+    @staticmethod
+    def find_endpoints(skeleton):
+        skeleton_modified = skeleton.copy()
+        endpoints_list = []
+        # Find the endpoints of the skeleton
+        endpoints = np.argwhere(skeleton == 1)
+        for endpoint in endpoints:
+            x, y, z = endpoint
+            # Check if the endpoint is a true endpoint
+            if np.sum(skeleton[x - 1:x + 2, y - 1:y + 2, z - 1:z + 2]) > 2:
+                skeleton_modified[x, y, z] = 0
+                endpoints_list.append((x, y, z))
+        return skeleton_modified
+    
+    # find largest objects in the mask
+    def find_objects( mask, num_objects=1):
+        labels = label(mask,connectivity=1)
+        labels_reduced = np.zeros_like(labels)
+        vel = np.zeros(np.max(labels))
+        for i in range(1, np.max(labels) + 1):
+            vel[i-1] = np.sum(labels == i)
+        vel = np.argsort(vel)[::-1]+1
+        for i in range(0, num_objects):
+            labels_reduced = labels_reduced + ((labels == (vel[i]))*(i+1))
+        return labels_reduced
+    
+    def vol_strel():
+        structure=np.ones((3,3,3), dtype=bool)
+        structure[0,0,0] = False
+        structure[0,0,2] = False
+        structure[0,2,0] = False
+        structure[0,2,2] = False
+        structure[2,0,0] = False
+        structure[2,0,2] = False
+        structure[2,2,0] = False
+        structure[2,2,2] = False
+        return structure
+    
+
+def central_analysis(labels, mask_part, vein, H, max_H, dil_contr, nifti_array, vessels_mask):
+
+    hyl = np.zeros_like(mask_part, dtype=np.bool_)
+    hyl[int(H[0]), int(H[1]), int(H[2])] = True
+    dist_map_H = distance_transform_edt(~hyl)
+
+    # create contour of lung mask
+    contour = mask_part & ~binary_erosion(mask_part > 0, iterations=1)
+    contour = (contour > 0) & ~(binary_dilation((vein), iterations=dil_contr,structure=morph_anal.vol_strel()) > 0)
+    # contour = contour * ~(binary_dilation((nifti_array < 550) & (nifti_array > 450), iterations=1,structure=morph_anal.vol_strel()))
+
+    # contour = morph_anal.find_objects(contour, num_objects=1)
+    dist_map_Contr = distance_transform_edt(~contour)
+    dist_map = ( ( dist_map_Contr ) / ( dist_map_Contr + dist_map_H ) ) * mask_part
+
+     # num = 11
+    num = 21 # for visualization
+
+    steps_thr = np.linspace(0,max_H,num)
+    step = steps_thr[1] - steps_thr[0]
+
+    valM = np.zeros(int(num))
+    valL1 = np.zeros(int(num))
+    valL2 = np.zeros(int(num))
+
+    i = 0
+    for thr in steps_thr:
+        bin = (dist_map > thr) & (dist_map < (thr + step))
+        valM[i] = np.mean(nifti_array[ bin & (~vessels_mask) ])
+        valL1[i] = np.sum( labels[ bin & (~vessels_mask) ]==1 )/ np.sum( labels[ bin & (~vessels_mask) ]>0 ) 
+        valL2[i] = np.sum( labels[ bin & (~vessels_mask) ]==2 )/ np.sum( labels[ bin & (~vessels_mask) ]>0 )             
+        i += 1
+
+
+    # fit linear curve to the data valM and give me the slope and ignore nan values
+    valM2 = valM[~np.isnan(valM)]
+    valM2 = valM2[::-1]
+    ind2 = np.linspace(0,1,len(valM))[~np.isnan(valM)]
+    slope, bias = np.polyfit(ind2, valM2, 1)
+
+    return slope
