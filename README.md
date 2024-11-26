@@ -80,8 +80,10 @@ Example of directory structure of two patient data:
 ```
 
 ## Calling of the program:
-
-Call Ii the command window with activated virtual enviroment:
+call in a command window with the virtual environment activated:
+Arguments: 
+* -i (--input) input path to dicom files
+* -o (--output) output path to save results (optional, creates a "Results" folder in the data path).
 
 ```
 python3 LungAnalysis.py -h
