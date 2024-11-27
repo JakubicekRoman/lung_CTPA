@@ -34,7 +34,7 @@ cd .\lung_CTPA\
 ```
 Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/windows/)
-* add the python path to Enviromaent Variables (or later) during installation
+* add the python path to Windows Enviroment Variables (or later) during installation
 
 Check if the python and pip are installed:
 ```
