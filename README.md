@@ -2,8 +2,7 @@
 This work aimed to develop an automated method for quantifying the distribution and severity of perfusion changes on CT pulmonary angiography (CPTA) in patients with chronic thromboembolic pulmonary hypertension (CTEPH)
 
 ## Description
-For now, only vessel segmentation is included.
-A tool for the vessel segmentation in AO images based on segmentation neural network nnUNet second version.
+Fully automated quantification of the extent of pulmonary perfusion changes and their distribution on CT pulmonary angiography in patients with chronic thromboembolic pulmonary hypertension by Bayesian analysis.
 
 General information about this tool:
 
