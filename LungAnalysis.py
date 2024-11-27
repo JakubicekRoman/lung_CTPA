@@ -41,5 +41,6 @@ lungSegmentation(args.output)
 
 get_pat_info(data_folder, args.output)
 
+print("Lung analysis...")
 lung_analysis(args.output)
-
+print("Analysis has been completed")

@@ -164,8 +164,6 @@ def lungSegmentation(output_folder):
     print("Segmentation has been finished")
 
 
-
-
 def get_pat_info(dcm_folder, output_folder):
 
     df = pd.DataFrame(columns=['Folder_name'])
