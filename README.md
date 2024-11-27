@@ -19,7 +19,7 @@ General information about this tool:
 
 ## Requirements
 * virtual environment
-* installed python (tested on 3.12.7 and 3.10 version)
+* installed python (tested on 3.12.7)
 * installed pip and venv
 
 ## Virtual environment
