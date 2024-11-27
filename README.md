@@ -85,7 +85,7 @@ Arguments:
 * -o (--output) output path to save results (optional, creates a "Results" folder in the data path).
 
 ```
-python LungAnalysis.py -h
+python LungAnalysis.py --help
 python LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 ```
 
