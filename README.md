@@ -33,10 +33,10 @@ git clone https://github.com/JakubicekRoman/lung_CTPA.git
 cd .\lung_CTPA\
 ```
 Install python 3.12.7 (if not already):
-download [**here**](https://www.python.org/downloads/)
+download [**here**](https://www.python.org/downloads/windows/)
 * add the python path to Enviromaent Variables (or later) during installation
 
-Check if the python and pip is install:
+Check if the python and pip are installed:
 ```
 python --version
 pip --version
