@@ -32,20 +32,19 @@ git clone https://github.com/JakubicekRoman/lung_CTPA.git
 ```
 cd .\lung_CTPA\
 ```
-* for PIP installation, check Python version (major version ```python3 --version``` and all installed versions ```ls -ls /usr/bin/python*```)
-
-Install python (if not already):
+Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/)
+* add the python path to Enviromaent Variables (or later) during installation
 
+Check if the python and pip is install:
 ```
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python get-pip.py
-pip install virtualenv
+python --version
+pip --version
 ```
 
-Create virtual environment:
+Create virtual environment (or via anaconda), example for pip and venv:
 ```
-python3 -m venv ".\.venv"
+python -m venv ".\.venv"
 ```
 
 Activate venv
@@ -55,7 +54,7 @@ Activate venv
 
 Install the required packages from .txt file:
 ```
-python3 -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Data directory structure
@@ -86,14 +85,14 @@ Arguments:
 * -o (--output) output path to save results (optional, creates a "Results" folder in the data path).
 
 ```
-python3 LungAnalysis.py -h
-python3 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
+python LungAnalysis.py -h
+python LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 ```
 
 Example of calling:
 ```
-python3 LungAnalysis.py --input .\data\dicoms --output .\data\results
-python3 LungAnalysis.py --input .\data\dicoms
+python LungAnalysis.py --input .\data\dicoms --output .\data\results
+python LungAnalysis.py --input .\data\dicoms
 ```
 
 ## Licence
