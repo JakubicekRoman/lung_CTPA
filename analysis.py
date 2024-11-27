@@ -139,12 +139,12 @@ def lung_analysis(data_folder):
             df.at[pat, 'Entropy_2'] = ent02
             df.at[pat, 'Slope_Left'] = slope_L
             df.at[pat, 'Slope_Right'] = slope_R
-    df.to_excel(output_folder, index=False)
+        df.to_excel(output_folder, index=False)
 
-    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
-    pred = ndimage.zoom(pred, factorUp, order=0)
-    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
-    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels.nii.gz'))
+        factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
+        pred = ndimage.zoom(pred, factorUp, order=0)
+        labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
+        nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels.nii.gz'))
 
 
 def lungSegmentation(output_folder):

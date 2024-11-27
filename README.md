@@ -19,11 +19,11 @@ General information about this tool:
 
 ## Requirements
 * virtual environment
-* installed python (tested on 3.10 version)
+* installed python (tested on 3.12.7 and 3.10 version)
 * installed pip and venv
 
 ## Virtual environment
-in the terminal:
+in the command window:
 * clone git repository from github
 ```
 git clone https://github.com/JakubicekRoman/lung_CTPA.git
@@ -45,7 +45,7 @@ pip install virtualenv
 
 Create virtual environment:
 ```
-python3.10 -m venv ".\.venv"
+python3 -m venv ".\.venv"
 ```
 
 Activate venv
