@@ -59,6 +59,8 @@ or you may manually install in the command window (follow the text in bat file)
 
 * for new env activation for next work in the future, run only *activate_env.bat*
 
+in the case of 
+
 ## Data directory structure
 All data needs to be **dicom** files and one patient (case) needs to be in an single folder 
 Example of directory structure of two patient data:
@@ -97,6 +99,8 @@ Example of calling:
 .\.venv\Scripts\python.exe LungAnalysis.py --input .\project\data --output .\data\results
 .\.venv\Scripts\python.exe LungAnalysis.py --input .\project\data
 ```
+
+If you have any questions or problems with the SW, do not hesitate to contact me. (jakubicek@vut.cz)
 
 ## Licence
 The tool is possible to use for academic and reseach purposes (MIT License). The proposed approach was submitted to ... 
