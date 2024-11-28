@@ -38,7 +38,7 @@ download [**here**](https://www.python.org/downloads/windows/)
 !!! add the python path to Windows Enviroment Variables (or later) during installation !!!
 
 <p align="left">
-  <img src="screenshot_1.png" width="300">
+  <img src="images\screenshot_1.png" width="300">
 </p>
 
 * Install Git (if not already):
