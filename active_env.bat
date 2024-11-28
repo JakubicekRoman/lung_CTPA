@@ -33,7 +33,7 @@ if exist .\.venv\Scripts\activate (
     ) else (
         echo =================================
         echo Virtual environment activated.
-        echo You can now run your Python scripts.
+        echo You can now run LungAnalysis script
         echo =================================
     )
 ) else (
@@ -43,5 +43,4 @@ if exist .\.venv\Scripts\activate (
     exit /b 1
 )
 
-:: Keep the command prompt open for further work
 cmd /k
