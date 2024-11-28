@@ -53,10 +53,11 @@ or donwload whole folder from GitHub
 
 ## Virtual environment
 
-* you may use the .bat file for easy instalation and setting of virtual enviroment
+* you may use the ""install_env.bat"" file for easy instalation and setting of virtual enviroment
 
 or you may manually install in the command window (follow the text in bat file)
 
+* for env activation for next work in the future, run only activate_env.bat
 
 ## Data directory structure
 All data needs to be **dicom** files and one patient (case) needs to be in an single folder 
@@ -87,14 +88,14 @@ Arguments:
 * -o (--output) output path to save results (optional, creates a "Results" folder in the data path).
 
 ```
-python LungAnalysis.py --help
-python LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
+py -3.12 LungAnalysis.py --help
+py -3.12 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 ```
 
 Example of calling:
 ```
-python LungAnalysis.py --input .\data\dicoms --output .\data\results
-python LungAnalysis.py --input .\data\dicoms
+py -3.12 LungAnalysis.py --input .\data\dicoms --output .\data\results
+py -3.12 LungAnalysis.py --input .\data\dicoms
 ```
 
 ## Licence

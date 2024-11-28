@@ -7,7 +7,7 @@ cd /d "%~dp0"
 
 :: Display starting message
 echo ========================================================
-echo Setting up Python Virtual Environment for LungAnalysis
+echo Activatation of Python Virtual Environment for LungAnalysis
 echo ========================================================
 
 
@@ -39,17 +39,6 @@ if %errorlevel% neq 0 (
     echo ... pip is installed.
 )
 
-:: Create a virtual environment
-echo Creating virtual environment...
-py -3.12 -m venv ".\.venv"
-if %errorlevel% neq 0 (
-    echo ... Failed to create virtual environment. Please check your Python 3.12 installation.
-    pause
-    exit /b 1
-) else (
-    echo ... Virtual environment created successfully.
-)
-
 :: Activate the virtual environment
 echo Activating virtual environment...
 call .\.venv\Scripts\activate
@@ -61,23 +50,5 @@ if %errorlevel% neq 0 (
     echo Virtual environment activated.
 )
 
-:: Install requirements
-echo Installing required Python packages...
-py -3.12 -m pip install --upgrade pip
-py -3.12 -m pip install -r requirements.txt
-if %errorlevel% neq 0 (
-    echo ... Failed to install required packages. Please check your requirements.txt file.
-    pause
-    exit /b 1
-) else (
-    echo ... Required packages installed successfully.
-)
-
-:: Completion message
-echo ========================================================
-echo Virtual environment setup completed. All checks passed.
-echo To activate the environment in the future, run:
-echo .\.venv\Scripts\activate
-echo ========================================================
-
 cmd
+
