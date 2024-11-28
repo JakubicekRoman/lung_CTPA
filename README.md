@@ -43,9 +43,9 @@ download [**here**](https://www.python.org/downloads/windows/)
 </p>
 
 * Install Git (if not already):
-donwload [**here**](https://git-scm.com/downloads/win)
+download [**here**](https://git-scm.com/downloads/win)
 
-* clone git repository from github or donwload whole folder from GitHub
+* clone git repository from github or download whole folder from GitHub
 ```
 git clone https://github.com/JakubicekRoman/lung_CTPA.git
 ```
@@ -94,8 +94,8 @@ Arguments:
 
 Example of calling:
 ```
-.\.venv\Scripts\python.exe LungAnalysis.py --input .\data\dicoms --output .\data\results
-.\.venv\Scripts\python.exe LungAnalysis.py --input .\data\dicoms
+.\.venv\Scripts\python.exe LungAnalysis.py --input .\project\data --output .\data\results
+.\.venv\Scripts\python.exe LungAnalysis.py --input .\project\data
 ```
 
 ## Licence
