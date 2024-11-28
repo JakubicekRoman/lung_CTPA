@@ -20,6 +20,8 @@ def lung_analysis(data_folder):
     # Get a list of all NIfTI files in the directory
     nifti_files = [file for file in os.listdir(data_folder) if file.endswith('_segm.nii.gz')]
 
+    print("There are ", len(nifti_files), " found cases for Analysis")
+
     # read excel file Outcomes.xlsx from arg.output folder                        
     output_folder = os.path.join(data_folder, 'Outcomes.xlsx')
     if not os.path.exists(output_folder):

@@ -30,5 +30,5 @@ if %errorlevel% neq 0 (
     echo =================================
 )
 
-cmd
+cmd /k
 

@@ -86,4 +86,4 @@ echo To activate the environment in the future, run:
 echo .\.venv\Scripts\activate
 echo ========================================================
 
-cmd
+cmd /k

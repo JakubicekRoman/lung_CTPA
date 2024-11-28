@@ -35,9 +35,9 @@ os.makedirs(args.output, exist_ok=True)
 print("Input folder: ", data_folder)
 print("Output folder: ", args.output)
 
-# convertToNii(data_folder, args.output)
+convertToNii(data_folder, args.output)
 
-# lungSegmentation(args.output)
+lungSegmentation(args.output)
 
 get_pat_info(data_folder, args.output)
 
