@@ -73,6 +73,11 @@ if %errorlevel% neq 0 (
     echo ... Required packages installed successfully.
 )
 
+echo ===========================================
+echo Virtual environment created and activated.
+echo ===========================================
+
+
 :: Completion message
 echo ========================================================
 echo Virtual environment setup completed. All checks passed.
