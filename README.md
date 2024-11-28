@@ -2,9 +2,9 @@
 This work aimed to develop an automated method for quantifying the distribution and severity of perfusion changes on CT pulmonary angiography (CPTA) in patients with chronic thromboembolic pulmonary hypertension (CTEPH)
 
 <p align="left">
-  <img src="screenshot_3.png" width="150">
-  <img src="screenshot_2.png" width="150">
-  <img src="screenshot_4.png" width="150">
+  <img src="images\screenshot_3.png" width="150">
+  <img src="images\screenshot_2.png" width="150">
+  <img src="images\screenshot_4.png" width="150">
 </p>
 
 
@@ -32,12 +32,6 @@ General information about this tool:
 
 ## Prerequisites
 
-* clone git repository from github
-```
-git clone https://github.com/JakubicekRoman/lung_CTPA.git
-```
-or donwload whole folder from GitHub
-
 * Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/windows/)
 
@@ -49,6 +43,13 @@ download [**here**](https://www.python.org/downloads/windows/)
 
 * Install Git (if not already):
 donwload [**here**](https://git-scm.com/downloads/win)
+
+* clone git repository from github
+```
+git clone https://github.com/JakubicekRoman/lung_CTPA.git
+```
+or donwload whole folder from GitHub
+
 
 ## Virtual environment
 
