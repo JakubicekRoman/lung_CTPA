@@ -89,7 +89,7 @@ Arguments:
 
 ```
 .\.venv\Scripts\python.exe LungAnalysis.py --help
-.\.venv\Scripts\python.exe LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
+.\.venv\Scripts\python.exe LungAnalysis.py --input PATH_DICOM_DATA --output PATH_RESULT_DATA
 ```
 
 Example of calling:
