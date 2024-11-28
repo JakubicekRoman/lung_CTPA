@@ -34,7 +34,10 @@ Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/windows/)
 * add the python path to Windows Enviroment Variables (or later) during installation
 
-![screenshot](screenshot_1.png)
+<p align="center">
+  <img src="screenshot_1.png" width="100" title="add path!">
+  <img src="your_relative_path_here_number_2_large_name" width="350" alt="accessibility text">
+</p>
 
 Install Git (if not already):
 [**here**](https://git-scm.com/downloads/win)
