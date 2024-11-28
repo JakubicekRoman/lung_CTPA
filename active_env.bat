@@ -19,7 +19,7 @@ if %errorlevel% neq 0 (
     pause
     exit /b 1
 ) else (
-    echo Python is installed. Proceeding...
+    echo ... Python is installed. Proceeding...
 )
 
 :: Activate the virtual environment
