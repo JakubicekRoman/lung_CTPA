@@ -26,7 +26,7 @@ General information about this tool:
 
 ## Requirements
 * installed Git
-* installed python (tested on 3.12.7)
+* installed python (tested on 3.12.7) + Py Launcher
 * installed pip and venv
 * virtual environment
 * tested on Windows (for Linux you must modify code)
