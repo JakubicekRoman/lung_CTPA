@@ -5,6 +5,7 @@ This work aimed to develop an automated method for quantifying the distribution 
   <img src="images\screenshot_3.png" width="150">
   <img src="images\screenshot_2.png" width="150">
   <img src="images\screenshot_4.png" width="150">
+  <img src="images\screenshot_5.png" width="150">
 </p>
 
 
