@@ -88,14 +88,14 @@ Arguments:
 * -o (--output) output path to save results (optional, creates a "Results" folder in the data path).
 
 ```
-py -3.12 LungAnalysis.py --help
-py -3.12 LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
+.\.venv\Scripts\python.exe LungAnalysis.py --help
+.\.venv\Scripts\python.exe LungAnalysis.py --input folder_with_dicoms --output folder_for_saving
 ```
 
 Example of calling:
 ```
-py -3.12 LungAnalysis.py --input .\data\dicoms --output .\data\results
-py -3.12 LungAnalysis.py --input .\data\dicoms
+.\.venv\Scripts\python.exe LungAnalysis.py --input .\data\dicoms --output .\data\results
+.\.venv\Scripts\python.exe LungAnalysis.py --input .\data\dicoms
 ```
 
 ## Licence
