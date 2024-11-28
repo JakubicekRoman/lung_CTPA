@@ -63,8 +63,8 @@ if %errorlevel% neq 0 (
 
 :: Install requirements
 echo Installing required Python packages...
-py -3.12 -m pip install --upgrade pip
-py -3.12 -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo ... Failed to install required packages. Please check your requirements.txt file.
     pause
@@ -72,6 +72,7 @@ if %errorlevel% neq 0 (
 ) else (
     echo ... Required packages installed successfully.
 )
+
 
 echo ===========================================
 echo Virtual environment created and activated.
