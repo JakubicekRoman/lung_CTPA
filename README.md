@@ -1,6 +1,13 @@
 # Pulmonary perfusion changes quantification
 This work aimed to develop an automated method for quantifying the distribution and severity of perfusion changes on CT pulmonary angiography (CPTA) in patients with chronic thromboembolic pulmonary hypertension (CTEPH)
 
+<p align="left">
+  <img src="screenshot_3.png" width="150">
+  <img src="screenshot_2.png" width="150">
+  <img src="screenshot_4.png" width="150">
+</p>
+
+
 ## Description
 Fully automated quantification of the extent of pulmonary perfusion changes and their distribution on CT pulmonary angiography in patients with chronic thromboembolic pulmonary hypertension by Bayesian analysis.
 
@@ -17,57 +24,38 @@ General information about this tool:
 * output is an excel file with characterization values for each patient folder
 
 ## Requirements
-* virtual environment
 * installed Git
 * installed python (tested on 3.12.7)
 * installed pip and venv
+* virtual environment
+* tested on Windows (for Linux you must modify code)
 
-## Virtual environment
+## Prerequisites
 
 * clone git repository from github
 ```
 git clone https://github.com/JakubicekRoman/lung_CTPA.git
 ```
-* or donwload whole folder from GitHub
+or donwload whole folder from GitHub
 
-Install python 3.12.7 (if not already):
+* Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/windows/)
-* add the python path to Windows Enviroment Variables (or later) during installation
 
-<p align="center">
-  <img src="screenshot_1.png" width="100" title="add path!">
-  <img src="your_relative_path_here_number_2_large_name" width="350" alt="accessibility text">
+!!! add the python path to Windows Enviroment Variables (or later) during installation !!!
+
+<p align="left">
+  <img src="screenshot_1.png" width="300">
 </p>
 
-Install Git (if not already):
-[**here**](https://git-scm.com/downloads/win)
+* Install Git (if not already):
+donwload [**here**](https://git-scm.com/downloads/win)
 
---------------------------------------------------------------------
+## Virtual environment
 
-You can use the .bat file for easy instalation and setting of virtual enviroment.
+* you may use the .bat file for easy instalation and setting of virtual enviroment
 
-Or you can manually install in command window:
+or you may manually install in the command window (follow the text in bat file)
 
-Check if the python and pip are installed:
-```
-py -0
-py -3.12 -m python pip --version
-```
-
-Create virtual environment (or via anaconda), example for pip and venv:
-```
-python -m venv ".\.venv"
-```
-
-Activate venv
-```
-.\.venv\Scripts\activate
-```
-
-Install the required packages from .txt file:
-```
-python -m pip install -r requirements.txt
-```
 
 ## Data directory structure
 All data needs to be **dicom** files and one patient (case) needs to be in an single folder 
