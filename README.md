@@ -18,27 +18,37 @@ General information about this tool:
 
 ## Requirements
 * virtual environment
+* installed Git
 * installed python (tested on 3.12.7)
 * installed pip and venv
 
 ## Virtual environment
-in the command window:
+
 * clone git repository from github
 ```
 git clone https://github.com/JakubicekRoman/lung_CTPA.git
 ```
-* set current folder of lung_CTPA in the terminal
-```
-cd .\lung_CTPA\
-```
+* or donwload whole folder from GitHub
+
 Install python 3.12.7 (if not already):
 download [**here**](https://www.python.org/downloads/windows/)
 * add the python path to Windows Enviroment Variables (or later) during installation
 
+![screenshot](screenshot_1.png)
+
+Install Git (if not already):
+[**here**](https://git-scm.com/downloads/win)
+
+--------------------------------------------------------------------
+
+You can use the .bat file for easy instalation and setting of virtual enviroment.
+
+Or you can manually install in command window:
+
 Check if the python and pip are installed:
 ```
-python --version
-pip --version
+py -0
+py -3.12 -m python pip --version
 ```
 
 Create virtual environment (or via anaconda), example for pip and venv:
