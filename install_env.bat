@@ -58,7 +58,7 @@ if %errorlevel% neq 0 (
     pause
     exit /b 1
 ) else (
-    echo Virtual environment activated.
+    echo ... Virtual environment activated.
 )
 
 :: Install requirements

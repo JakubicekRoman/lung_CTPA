@@ -44,20 +44,19 @@ download [**here**](https://www.python.org/downloads/windows/)
 * Install Git (if not already):
 donwload [**here**](https://git-scm.com/downloads/win)
 
-* clone git repository from github
+* clone git repository from github or donwload whole folder from GitHub
 ```
 git clone https://github.com/JakubicekRoman/lung_CTPA.git
 ```
-or donwload whole folder from GitHub
 
 
 ## Virtual environment
 
-* you may use the ""install_env.bat"" file for easy instalation and setting of virtual enviroment
+* you may use the *install_env.bat* file for easy instalation and setting of virtual enviroment
 
 or you may manually install in the command window (follow the text in bat file)
 
-* for env activation for next work in the future, run only activate_env.bat
+* for new env activation for next work in the future, run only *activate_env.bat*
 
 ## Data directory structure
 All data needs to be **dicom** files and one patient (case) needs to be in an single folder 
