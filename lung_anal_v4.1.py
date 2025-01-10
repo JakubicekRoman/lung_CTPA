@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
-import napari
+# import napari
 from scipy.ndimage import binary_erosion, binary_dilation
 from skimage.morphology import skeletonize
 # from scipy.ndimage import binary_hit_or_miss 
@@ -14,12 +14,14 @@ from sklearn.cluster import KMeans
 from scipy.ndimage import median_filter
 import pandas as pd
 from scipy import ndimage
-from utils import int_analyze, data_subsampling, lung_separate, predict_mask
+from utils import int_analyze, data_subsampling, lung_separate, predict_mask, to_flattened_array
 import openpyxl
 from scipy.stats import entropy
 
-data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\nifti'
+# data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data1\nifti'
 # data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data3\nifti'
+
+data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data_all\nifti'
 
 # create new folder
 if not os.path.exists(data_dir.replace('nifti','result_img')):
@@ -28,39 +30,41 @@ if not os.path.exists(data_dir.replace('nifti','result_img')):
 # Get a list of all NIfTI files in the directory
 nifti_files = [file for file in os.listdir(data_dir) if file.endswith('.nii.gz')]
 
-results = pd.DataFrame(columns=['file', 'whole_mean1', 'whole_mean2', 'whole_mean3',
-                                'Whole_std1', 'Whole_std2', 'Whole_std3', 
-                                'Whole_rate1', 'Whole_rate2', 'Whole_rate3',
-                                 'Left_mean1', 'Left_mean2', 'Left_mean3',
-                                 'Left_std1', 'Left_std2', 'Left_std3',
-                                 'Left_rate1', 'Left_rate2', 'Left_rate3',
-                                 'Right_mean1', 'Right_mean2', 'Right_mean3',
-                                 'Right_std1', 'Right_std2', 'Right_std3',
-                                 'Right_rate1', 'Right_rate2', 'Right_rate3',
-                                 'SL_mean1', 'SL_mean2', 'SL_mean3',
-                                 'SL_std1', 'SL_std2', 'SL_std3',
-                                 'SL_rate1', 'SL_rate2', 'SL_rate3',
-                                 'IL_mean1', 'IL_mean2', 'IL_mean3',
-                                 'IL_std1', 'IL_std2', 'IL_std3',
-                                 'IL_rate1', 'IL_rate2', 'IL_rate3',
-                                 'SR_mean1', 'SR_mean2', 'SR_mean3',
-                                 'SR_std1', 'SR_std2', 'SR_std3',
-                                 'SR_rate1', 'SR_rate2', 'SR_rate3',
-                                 'MR_mean1', 'MR_mean2', 'MR_mean3',
-                                 'MR_std1', 'MR_std2', 'MR_std3',
-                                 'MR_rate1', 'MR_rate2', 'MR_rate3',
-                                 'IR_mean1', 'IR_mean2', 'IR_mean3',
-                                 'IR_std1', 'IR_std2', 'IR_std3',
-                                 'IR_rate1', 'IR_rate2', 'IR_rate3'])
-
+results = pd.DataFrame(columns=['file', 'mdl_meanHypo', 'mdl_meanOligo', 'mdl_meanHyper',
+                                'mdl_stdHypo', 'mdl_stdOligo', 'mdl_stdHyper',
+                                'mdl_rateHypo', 'mdl_rateOligo', 'mdl_rateHyper',
+                                'whole_meanHypo', 'whole_meanOligo', 'whole_meanHyper',
+                                'whole_stdHypo', 'whole_stdOligo', 'whole_stdHyper',
+                                'whole_rateHypo', 'whole_rateOligo', 'whole_rateHyper',
+                                'Left_meanHypo', 'Left_meanOligo', 'Left_meanHyper',
+                                'Left_stdHypo', 'Left_stdOligo', 'Left_stdHyper',
+                                'Left_rateHypo', 'Left_rateOligo', 'Left_rateHyper',
+                                'Right_meanHypo', 'Right_meanOligo', 'Right_meanHyper',
+                                'Right_stdHypo', 'Right_stdOligo', 'Right_stdHyper',
+                                'Right_rateHypo', 'Right_rateOligo', 'Right_rateHyper',
+                                'SL_meanHypo', 'SL_meanOligo', 'SL_meanHyper',
+                                'SL_stdHypo', 'SL_stdOligo', 'SL_stdHyper',
+                                'SL_rateHypo', 'SL_rateOligo', 'SL_rateHyper',
+                                'IL_meanHypo', 'IL_meanOligo', 'IL_meanHyper',
+                                'IL_stdHypo', 'IL_stdOligo', 'IL_stdHyper',
+                                'IL_rateHypo', 'IL_rateOligo', 'IL_rateHyper',
+                                'SR_meanHypo', 'SR_meanOligo', 'SR_meanHyper',
+                                'SR_stdHypo', 'SR_stdOligo', 'SR_stdHyper',
+                                'SR_rateHypo', 'SR_rateOligo', 'SR_rateHyper',
+                                'MR_meanHypo', 'MR_meanOligo', 'MR_meanHyper',
+                                'MR_stdHypo', 'MR_stdOligo', 'MR_stdHyper',
+                                'MR_rateHypo', 'MR_rateOligo', 'MR_rateHyper',
+                                'IR_meanHypo', 'IR_meanOligo', 'IR_meanHyper',
+                                'IR_stdHypo', 'IR_stdOligo', 'IR_stdHyper',
+                                'IR_rateHypo', 'IR_rateOligo', 'IR_rateHyper'])
 
 
 # nifti_files = [nifti_files[41]]    # export image for paper of one patient
 
 factor = 0.5
 # Iterate over the NIfTI files
-# for pat in range(2,3):
-for pat in range(0,len(nifti_files)):
+for pat in range(53,54):
+# for pat in range(0,len(nifti_files)):
     nifti_file = nifti_files[pat]
     print(nifti_file)
     print(str(pat/len(nifti_files)*100)+'%')
@@ -94,66 +98,67 @@ for pat in range(0,len(nifti_files)):
 
     # # global of whole lung
     path_save = os.path.join(nifti_path.replace('.nii.gz','_whole.png').replace('nifti','result_img'))
-    gmW, val = int_analyze(data, ((left_lung) | (right_lung)), vessels_mask, path_save)
+    gmW, val, indx = int_analyze(dataO, ((left_lung) | (right_lung)), vessels_mask, path_save)
     res.append(val.means_)
     res.append(np.sqrt(val.covariances_))
     res.append(val.weights_)
 
-    pred = predict_mask(data, vessels_mask, ((left_lung) | (right_lung)), gmW)
+    pred = predict_mask(data, vessels_mask, ((left_lung) | (right_lung)), gmW, indx)
     factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
     pred = ndimage.zoom(pred, factorUp, order=0)
     labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
     nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_whole.nii.gz').replace('nifti','result_img'))
 
-    # # global of left lung
-    path_save = os.path.join(nifti_path.replace('.nii.gz','_Left.png').replace('nifti','result_img'))
-    gm, val = int_analyze(data, left_lung, vessels_mask, path_save)
-    res.append(val.means_)
-    res.append(np.sqrt(val.covariances_))
-    res.append(val.weights_)
-    predL = predict_mask(data, vessels_mask, left_lung, gm)
+    # # # statistics of whole/parts lung
 
-    # # global of rigth lung
-    path_save = os.path.join(nifti_path.replace('.nii.gz','_Right.png').replace('nifti','result_img'))
-    gm, val  = int_analyze(data, right_lung, vessels_mask, path_save)
-    res.append(val.means_)
-    res.append(np.sqrt(val.covariances_))
-    res.append(val.weights_)
-    predR = predict_mask(data, vessels_mask, right_lung, gm)
-
-    pred = predL + predR
-    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
-    pred = ndimage.zoom(pred, factorUp, order=0)
-    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
-    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_LR.nii.gz').replace('nifti','result_img'))
+    for part in range(0,3):
+        if part==0:
+            part_mask = pred*ndimage.zoom((left_lung) | (right_lung), factorUp, order=0)
+        elif part==1:
+            part_mask = pred*ndimage.zoom(left_lung, factorUp, order=0)
+        else:
+            part_mask = pred*ndimage.zoom(right_lung, factorUp, order=0)
+        
+        res.append(nifti_array[(part_mask)==3].mean())
+        res.append(nifti_array[(part_mask)==2].mean())
+        res.append(nifti_array[(part_mask)==1].mean())
+        res.append(nifti_array[(part_mask)==3].std())
+        res.append(nifti_array[(part_mask)==2].std())
+        res.append(nifti_array[(part_mask)==1].std())
+        res.append(np.sum((part_mask)==3) / np.sum(part_mask>0))
+        res.append(np.sum((part_mask)==2) / np.sum(part_mask>0))
+        res.append(np.sum((part_mask)==1) / np.sum(part_mask>0))
 
     # # partial of lung lobes
     parts = ['SL', 'IL', 'SR', 'MR', 'IR']
     k = 0
-    pred = np.zeros_like(data)
     for part in range(10,15):
-        # print(part)
         path_save = os.path.join(nifti_path.replace('.nii.gz','_'+parts[k]+'.png').replace('nifti','result_img'))
-        gm, val  = int_analyze(data, lung_mask==part, vessels_mask, path_save)
-        res.append(val.means_)
-        res.append(np.sqrt(val.covariances_))
-        res.append(val.weights_)
-        predTemp = predict_mask(data, vessels_mask, lung_mask==part, gm)
-        pred = pred + predTemp
+        part_mask = pred*ndimage.zoom(lung_mask==part, factorUp, order=0)
+        res.append(nifti_array[(part_mask)==3].mean())
+        res.append(nifti_array[(part_mask)==2].mean())
+        res.append(nifti_array[(part_mask)==1].mean())
+        res.append(nifti_array[(part_mask)==3].std())
+        res.append(nifti_array[(part_mask)==2].std())
+        res.append(nifti_array[(part_mask)==1].std())
+        res.append(np.sum((part_mask)==3) / np.sum(part_mask>0))
+        res.append(np.sum((part_mask)==2) / np.sum(part_mask>0))
+        res.append(np.sum((part_mask)==1) / np.sum(part_mask>0))
         k+=1
-    factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
-    pred = ndimage.zoom(pred, factorUp, order=0)
-    labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
-    nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_partial.nii.gz').replace('nifti','result_img'))
+        
+    # factorUp = (np.size(nifti_array,0)/np.size(pred,0), np.size(nifti_array,1)/np.size(pred,1), np.size(nifti_array,2)/np.size(pred,2))
+    # pred = ndimage.zoom(pred, factorUp, order=0)
+    # labels_nifti = nib.Nifti1Image(pred, nifti_data.affine)
+    # nib.save(labels_nifti, nifti_path.replace('.nii.gz','_labels_partial.nii.gz').replace('nifti','result_img'))
     nib.save(nifti_data, nifti_path.replace('.nii.gz','_original.nii.gz').replace('nifti','result_img'))
 
     # # convert res to numpy matrix
-    res = np.array(res)
+    res = to_flattened_array(res)
 
     # save the results to xlsx file for each patient as one raw in excel files
     results.loc[pat] = [nifti_file.replace('.nii.gz','')]+res.flatten().tolist()
     
-results.to_excel(data_dir.replace('nifti','')+'results_intensity.xlsx', index=False)
+    results.to_excel(data_dir.replace('nifti','')+'results_intensity.xlsx', index=False)
 
 
 # viewer = napari.Viewer()

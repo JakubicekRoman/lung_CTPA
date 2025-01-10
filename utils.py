@@ -95,10 +95,10 @@ def int_analyze(data, mask, vessels, file_path):
     val.weights_, val.covariances_, val.means_ = gm.weights_.squeeze()[indx], gm.covariances_.squeeze()[indx], gm.means_.squeeze()[indx]
 
     display_hist(lung_tissue_vekt, val, file_path)
-    return gm, val
+    return gm, val, indx
 
 
-def predict_mask(data, vessels, mask, model):
+def predict_mask(data, vessels, mask, model, indx): 
     mask1 = binary_dilation(mask, iterations=2)
     mask1 = binary_erosion(mask1, iterations=4)
     vessel2 = binary_erosion(vessels, iterations=1)
@@ -114,11 +114,11 @@ def predict_mask(data, vessels, mask, model):
     lung_tissue_vekt = np.round(lung_tissue_vekt).astype(int)
     gmW_labels = model.predict(lung_tissue_vekt)
 
-    # find mean values for each gmW_labels (0,1,2) in lung_tissue_vekt and sort the labels according to means and permute the labels 0,1,2 
-    means = np.zeros(3)
-    for i in range(3):
-        means[i] = np.mean(lung_tissue_vekt[gmW_labels==i])
-    indx = np.argsort(means)
+    # # find mean values for each gmW_labels (0,1,2) in lung_tissue_vekt and sort the labels according to means and permute the labels 0,1,2 
+    # means = np.zeros(3)
+    # for i in range(3):
+    #     means[i] = np.mean(lung_tissue_vekt[gmW_labels==i])
+    # indx = np.argsort(means)
     gmW_labels2 = np.array([2 if x==indx[0] else 1 if x==indx[1] else 0 for x in gmW_labels])
 
     labels = np.zeros_like(lung_tissue)
@@ -148,3 +148,23 @@ def display_hist(data, gm, file_path):
     # save the figure with plot as png image file
     plt.savefig(file_path, format='png')
     plt.close()
+
+
+
+
+def to_flattened_array(input_list):
+
+    flattened_list = []
+    for item in input_list:
+        if isinstance(item, np.ndarray):
+            # Přidej všechny hodnoty z numpy array
+            flattened_list.extend(item.flatten())
+        elif isinstance(item, (list, tuple)):
+            # Pokud je iterovatelný, přidej jeho hodnoty
+            flattened_list.extend(item)
+        else:
+            # Přidej jednotlivá čísla
+            flattened_list.append(item)
+
+    # Převod na numpy array
+    return np.array(flattened_list)
