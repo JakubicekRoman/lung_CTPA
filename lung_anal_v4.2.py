@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
-import napari
+# import napari
 from scipy.ndimage import binary_erosion, binary_dilation
 from skimage.morphology import skeletonize
 # from scipy.ndimage import binary_hit_or_miss 
@@ -19,13 +19,25 @@ import openpyxl
 from scipy.stats import entropy
 from skimage.feature import peak_local_max
 
-results = pd.DataFrame(columns=['file', 'whole_1_entropy', 'whole_1_num_max', 'whole_1_max', 'whole_1_mean', 'whole_1_surf',
-                                'whole_2_entropy', 'whole_2_num_max', 'whole_2_max', 'whole_2_mean', 'whole_2_surf',
-                                'left_1_entropy', 'left_1_num_max', 'left_1_max', 'left_1_mean', 'left_1_surf',
-                                'left_2_entropy', 'left_2_num_max', 'left_2_max', 'left_2_mean', 'left_2_surf',
-                                'right_1_entropy', 'right_1_num_max', 'right_1_max', 'right_1_mean', 'right_1_surf',
-                                'right_2_entropy', 'right_2_num_max', 'right_2_max', 'right_2_mean', 'right_2_surf'
+# results = pd.DataFrame(columns=['file', 'whole_1_entropy', 'whole_1_num_max', 'whole_1_max', 'whole_1_mean', 'whole_1_surf',
+#                                 'whole_2_entropy', 'whole_2_num_max', 'whole_2_max', 'whole_2_mean', 'whole_2_surf',
+#                                 'left_1_entropy', 'left_1_num_max', 'left_1_max', 'left_1_mean', 'left_1_surf',
+#                                 'left_2_entropy', 'left_2_num_max', 'left_2_max', 'left_2_mean', 'left_2_surf',
+#                                 'right_1_entropy', 'right_1_num_max', 'right_1_max', 'right_1_mean', 'right_1_surf',
+#                                 'right_2_entropy', 'right_2_num_max', 'right_2_max', 'right_2_mean', 'right_2_surf'
+#                                 ])
+
+results = pd.DataFrame(columns=['file', 'whole_entropyHypo', 'whole_numMaxHypo', 'whole_maxHypo', 'whole_meanHypo', 'whole_surfHypo',
+                                'whole_entropyOligo', 'whole_numMaxOligo', 'whole_maxOligo', 'whole_meanOligo', 'whole_surfOligo',
+                                'whole_entropyHyper', 'whole_numMaxHyper', 'whole_maxHyper', 'whole_meanHyper', 'whole_surfHyper',
+                                'left_entropyHypo', 'left_numMaxHypo', 'left_maxHypo', 'left_meanHypo', 'left_surfHypo',
+                                'left_entropyOligo', 'left_numMaxOligo', 'left_maxOligo', 'left_meanOligo', 'left_surfOligo',
+                                'left_entropyHyper', 'left_numMaxHyper', 'left_maxHyper', 'left_meanHyper', 'left_surfHyper',
+                                'right_entropyHypo', 'right_numMaxHypo', 'right_maxHypo', 'right_meanHypo', 'right_surfHypo',
+                                'right_entropyOligo', 'right_numMaxOligo', 'right_maxOligo', 'right_meanOligo', 'right_surfOligo',
+                                'right_entropyHyper', 'right_numMaxHyper', 'right_maxHyper', 'right_meanHyper', 'right_surfHyper'
                                 ])
+
 
 data_dir = r'D:\Projekty\CTPA_VFN\lung_CTPA\data\data_all\result_img'
 
@@ -68,7 +80,7 @@ for pat in range(0,len(nifti_files)):
             labels_1 = labels * (left_lung.copy())
         
 
-        for lab in [1,2]:
+        for lab in [3,2,1]:
             # find coordinates of all one voxel of one and two label in labels matrix, but not label three
             loc = np.argwhere((labels_1 == lab))
             # create 3D histogram of unique values in loc
@@ -102,7 +114,7 @@ for pat in range(0,len(nifti_files)):
     # save the results to xlsx file for each patient as one raw in excel files
     results.loc[pat] = [nifti_file.replace('_original.nii.gz','')]+res.flatten().tolist()
         
-results.to_excel(data_dir.replace('\\result_img','')+'\\results_entropy.xlsx', index=False)
+    results.to_excel(data_dir.replace('\\result_img','')+'\\results_entropy.xlsx', index=False)
 
 
 # viewer = napari.Viewer()

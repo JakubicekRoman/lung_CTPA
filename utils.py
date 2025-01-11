@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.mixture import BayesianGaussianMixture, GaussianMixture
 from scipy import ndimage
-from scipy.ndimage import binary_erosion, binary_dilation
+from scipy.ndimage import binary_erosion, binary_dilation, distance_transform_edt
+from skimage.measure import label
 import os
 
 def display_orthogonal_views(volume, slice_index=None, save_path=None):
@@ -98,7 +99,7 @@ def int_analyze(data, mask, vessels, file_path):
     return gm, val, indx
 
 
-def predict_mask(data, vessels, mask, model, indx): 
+def predict_mask(data, vessels, mask, model, indx):
     mask1 = binary_dilation(mask, iterations=2)
     mask1 = binary_erosion(mask1, iterations=4)
     vessel2 = binary_erosion(vessels, iterations=1)
@@ -168,3 +169,114 @@ def to_flattened_array(input_list):
 
     # Převod na numpy array
     return np.array(flattened_list)
+
+
+def def_perifer_map(lung_mask_array, positions1, positions2, local = False):
+    
+    bin2 = np.zeros_like(lung_mask_array, dtype=np.uint8)
+    bin3 = np.zeros_like(bin2, dtype=np.uint8)
+
+    if local:
+        Parts_lung = [2,3,4,5,6]
+    else:
+        Parts_lung = [0,1]
+
+    # for part in [0,1,2,3,4,5,6]:
+    for part in Parts_lung:
+    # for part in [2,3,4,5,6]:
+        if part==0:
+            mask_part = ((lung_mask_array == 12) | (lung_mask_array == 13) | (lung_mask_array == 14))
+            H = positions1.copy()
+            dil_contr = 20
+        elif part==1:
+            mask_part = (lung_mask_array == 10) | (lung_mask_array == 11)
+            H = positions2.copy()
+            dil_contr = 20
+        elif part==2:
+            mask_part = lung_mask_array==10
+            H = positions2.copy()
+            dil_contr = 15
+        elif part==3:
+            mask_part = lung_mask_array==11
+            H = positions2.copy()
+            dil_contr = 15
+        elif part==4:
+            mask_part = lung_mask_array==12
+            H = positions1.copy()
+            dil_contr = 20
+        elif part==5:
+            mask_part = lung_mask_array==13
+            H = positions1.copy()
+            dil_contr = 15
+        elif part==6:
+            mask_part = lung_mask_array==14
+            H = positions1.copy()
+            dil_contr = 15
+
+        hyl = np.zeros_like(mask_part, dtype=np.bool_)
+        hyl[int(H[0]), int(H[1]), int(H[2])] = True
+        dist_map_H = distance_transform_edt(~hyl)
+
+        # create contour of lung mask
+        contour = mask_part & ~binary_erosion(mask_part > 0, iterations=1)
+        contour = (contour > 0) & ~(binary_dilation((lung_mask_array == 53), iterations=dil_contr,structure=vol_strel()) > 0)
+
+        dist_map_Contr = distance_transform_edt(~contour)
+        dist_map = ( ( dist_map_Contr ) / ( dist_map_Contr + dist_map_H ) ) * mask_part
+
+        num = 21 # for visualization
+
+        steps_thr = np.linspace(0,0.95,num)
+        step = steps_thr[1] - steps_thr[0]
+
+        valM = np.zeros(int(num))
+        i = 0; lab = 1
+        for thr in steps_thr:
+        # for thr in steps_thr[0:3]:
+            bin = (dist_map > thr) & (dist_map < (thr + step))
+            i += 1
+            bin2 = bin2 + (bin*i)
+    
+    bin3[(bin2>0) & (bin2<4)] = 1
+    bin3[(bin2>=4) & (bin2<7)] = 2
+    bin3[ bin2>=7 ] = 3
+
+    return bin2, bin3
+
+
+def find_endpoints(skeleton):
+    skeleton_modified = skeleton.copy()
+    endpoints_list = []
+    # Find the endpoints of the skeleton
+    endpoints = np.argwhere(skeleton == 1)
+    for endpoint in endpoints:
+        x, y, z = endpoint
+        # Check if the endpoint is a true endpoint
+        if np.sum(skeleton[x - 1:x + 2, y - 1:y + 2, z - 1:z + 2]) > 2:
+            skeleton_modified[x, y, z] = 0
+            endpoints_list.append((x, y, z))
+    return skeleton_modified
+
+# find largest objects in the mask
+def find_objects( mask, num_objects=1):
+    labels = label(mask,connectivity=1)
+    labels_reduced = np.zeros_like(labels)
+    vel = np.zeros(np.max(labels))
+    for i in range(1, np.max(labels) + 1):
+        vel[i-1] = np.sum(labels == i)
+    vel = np.argsort(vel)[::-1]+1
+    for i in range(0, num_objects):
+        labels_reduced = labels_reduced + ((labels == (vel[i]))*(i+1))
+    return labels_reduced
+
+def vol_strel():
+    structure=np.ones((3,3,3), dtype=bool)
+    structure[0,0,0] = False
+    structure[0,0,2] = False
+    structure[0,2,0] = False
+    structure[0,2,2] = False
+    structure[2,0,0] = False
+    structure[2,0,2] = False
+    structure[2,2,0] = False
+    structure[2,2,2] = False
+    return structure

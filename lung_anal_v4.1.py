@@ -63,8 +63,8 @@ results = pd.DataFrame(columns=['file', 'mdl_meanHypo', 'mdl_meanOligo', 'mdl_me
 
 factor = 0.5
 # Iterate over the NIfTI files
-for pat in range(53,54):
-# for pat in range(0,len(nifti_files)):
+# for pat in range(53,54):
+for pat in range(0,len(nifti_files)):
     nifti_file = nifti_files[pat]
     print(nifti_file)
     print(str(pat/len(nifti_files)*100)+'%')
